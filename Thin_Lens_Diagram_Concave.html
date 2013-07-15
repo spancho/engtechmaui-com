@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Lens Equation</title>
+	<style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1, #omega {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1, #phi, #n {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+        #Canvas1 {
+            border: dotted 1px black;
+            background-color: #D4E6F4;
+            float: right;
+            margin-right: 3%;
+        }
+        </style>
+    <script type="text/javascript">
+        var dragging = false;
+        var background;
+        
+        function drawLine(cnvs, width, style, x_start, y_start, x_stop, y_stop) {
+            cnvs.lineWidth = width;
+            cnvs.strokeStyle = style;
+            cnvs.beginPath();
+            cnvs.moveTo(x_start,y_start);
+            cnvs.lineTo(x_stop,y_stop);
+            cnvs.stroke();		
+        }
+        
+        function drawTwoLines(cnvs, width, style, x_start, y_start,x_middle, y_middle, x_stop, y_stop) {
+            cnvs.lineWidth = width;
+            cnvs.strokeStyle = style;
+            cnvs.beginPath();
+            cnvs.moveTo(x_start,y_start);
+            cnvs.lineTo(x_middle,y_middle);
+            cnvs.lineTo(x_stop,y_stop);
+            cnvs.stroke();		
+        }
+		
+        function init() {
+            var canvas = document.getElementById('Canvas1');
+            var ctx = canvas.getContext("2d");
+            // Set canvas size variables: w,h
+            var w = canvas.width;
+            var h = canvas.height;
+            // Set focal point variables: f1, f2
+            var f1 = -100;
+            var f2 = f1;
+            // Set s1 variables (in pixels): s1, s1_height
+            var s1 = 300;
+            var s1_height = 75;
+            var top = 0; var bottom = h;
+            // set actual pixel values for locations of: center, f1, f2, and s1
+            var x0 = w/2;		var y0 = h/2;
+            var f1_x = x0 - f1;	var f1_y = y0;
+            var f2_x = x0 + f2;	var f2_y = y0;
+            var s1_x = x0 - s1;	var s1_y = y0-s1_height;
+            // Declare variables for ray tracing
+            var x1, y1, x2, y2, x3, y3, m, b;
+            var s2, s2_x, s2_y, s2_height, Mag;
+            var s1_new, s1_height_new;
+            var background;
+            
+            // Draw the Axis
+	    drawLine(ctx, 2, "black", 0, y0, w, y0 );
+            
+            // Draw x-axis graticules
+            for (i=0; i< w; i= i + 50) {
+                //ctx.beginPath();
+                if (i%100==0){
+		    drawLine(ctx, 2, "black", i, y0 + 8, i, y0 - 8 );
+                } else {
+                    drawLine(ctx, 1, "black", i, y0 + 4, i, y0 - 4 );
+                }
+            }
+            
+            // Draw the Lens
+            // right hand side of lens
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(.85*x0,top);
+            ctx.quadraticCurveTo(x0+((x0)*.1),y0,.85*x0,bottom);
+            ctx.stroke();
+            
+            // left hand side of lens
+            ctx.beginPath();
+            ctx.moveTo(1.15*x0,top);
+            ctx.quadraticCurveTo(x0-((x0)*.1),y0,1.15*x0,bottom);
+            ctx.stroke();
+            
+            // top and bottom of lens
+	    drawLine(ctx, 4, "black", 0.85*x0, top, 1.15*x0, top);
+	    drawLine(ctx, 4, "black", 0.85*x0, bottom, 1.15*x0, bottom);
+            
+            // Draw Center Line of Lens
+	    drawLine(ctx, 1, "black", x0, 0,x0, h );
+            
+            // Draw y-axis graticules
+            //ctx.lineWidth = 1;
+            for (i=0; i< h; i= i + 50) {
+                if (i%100==0){
+		    drawLine(ctx, 2, "black", x0-8, i, x0+8, i );
+                } else {
+		    drawLine(ctx, 2, "black", x0-4, i, x0+4, i );
+                }
+            }
+            
+            // Draw f distance marker "left side"
+	    drawLine(ctx, 1, "black", x0, 0.05*h, f1_x, 0.05*h );
+            
+	    // draw verticle line at f "left side"
+            drawLine(ctx, 1, "black", f1_x, y0, f1_x, 0 );
+	    
+            // Draw Arrowheads to f marker "left side"
+	    drawTwoLines(ctx, 2, "black", f1_x + (f1*.1), 0.025*h, f1_x,.05*h, f1_x + (f1*.1), 0.075*h);
+	    drawTwoLines(ctx, 2, "black", x0 - (f1*.1), 0.025*h, x0,.05*h, x0 - (f1*.1), 0.075*h);
+            
+	    // Label f "left side"
+            ctx.font = "12pt Georgia"
+            ctx.fillText("f", f1_x + 0.5*f1, .1*h);
+            
+            // Draw f distance marker "right side"
+	    drawLine(ctx, 1, "black", x0, 0.05*h, f2_x, 0.05*h );
+            
+	    // draw verticle line at f "right side"
+	    drawLine(ctx, 1, "black", f2_x, y0, f2_x, 0 );
+            
+	    // Draw Arrowheads to f marker "right side"
+            drawTwoLines(ctx, 2, "black", f2_x - (f2*.1), 0.025*h, f2_x, 0.05*h, f2_x - (f2*.1), 0.075*h);
+            drawTwoLines(ctx, 2, "black", x0 + (f2*.1), 0.025*h, x0, 0.05*h, x0 + (f2*.1), 0.075*h);
+            
+	    // Label f "right side"
+            ctx.font = "12pt Georgia"
+            ctx.fillText("f", f2_x - 0.5*f2, .1*h);
+            
+            background = ctx.getImageData(0,0,w,h);
+            
+            redraw();
+            
+            canvas.onmousedown = function(evt) {
+                dragging = true;
+                var rect = canvas.getBoundingClientRect();
+                s1_x = evt.clientX - rect.left;
+                s1_y = evt.clientY - rect.top;
+                redraw();
+            }
+            canvas.onmouseup = function(evt) {
+                dragging = false;
+            }
+            canvas.onmousemove = function(evt) {
+                if(!dragging) return;
+                var rect = canvas.getBoundingClientRect();
+                s1_x = evt.clientX - rect.left;
+                s1_y = evt.clientY - rect.top;
+                redraw();
+            }
+            
+            function redraw(){
+                s1 = x0 - s1_x;
+                s1_height = y0 - s1_y;
+                ctx.putImageData(background,0,0);
+		
+		// Instruction
+                ctx.font = "12pt Georgia"
+                ctx.strokeStyle = "red";
+                ctx.fillStyle = "red";
+                ctx.strokeWidth = 2;
+                ctx.fillText("Click and drag object arrow (ho).", 20,20);
+                
+                // Ray Trace Lines:
+                // Parallel Ray: draw parallel line, then through f2
+                x1 = x0;	y1 = s1_y;
+                x2 = f2_x;	y2 = f2_y;
+                m = ((y2-y1) / (x2-x1));
+                b = y1 - m*x1;
+                x3 = w;
+                y3 = x3*m + b
+                if (s1>=f1) { // Real Image
+		    drawTwoLines(ctx, 3, "green", s1_x, s1_y, x0, s1_y, x3,y3);
+                } else { // Virtual Image	
+		    drawTwoLines(ctx, 3, "green", s1_x, s1_y, x0, s1_y, 0, b);
+                    drawLine(ctx, 1, "green", x0, s1_y, f2_x, f2_y );
+                }
+                drawLine(ctx, 1, "green", f2_x, y0, x0, s1_y );
+                
+                // Focal Ray: draw line through f1, then parallel
+                x1 = s1_x;	y1 = s1_y;
+                x2 = f1_x;	y2 = f1_y;
+                m = ((y2-y1) / (x2-x1));
+                b = y1 - m*x1;
+                x3 = x0;
+                y3 = x3*m + b
+                if (s1>=f1) { // Real Image
+		    drawTwoLines(ctx, 3, "blue", s1_x, s1_y, x3, y3, w, y3);
+                } else { // Virtual Image
+		    drawTwoLines(ctx, 3, "blue", 0, y3, x3, y3, s1_x, s1_y );
+                    drawLine(ctx, 1, "blue", s1_x, s1_y, f1_x, f1_y );
+                }
+                drawLine(ctx, 1, "blue", 0, y3, x0, y3 );
+				
+                // Central Ray: draw line through center
+                x1 = s1_x;	y1 = s1_y;
+                x2 = x0;	y2 = y0;
+                m = ((y2-y1) / (x2-x1));
+                b = y1 - m*x1;
+                x3 = w;
+                y3 = x3*m + b
+                if (s1>=f1) { // Real Image
+		    drawLine(ctx, 3, "red", x1, y1, x3, y3 );
+                } else { // Virtual Image
+                    drawTwoLines(ctx, 3, "red", x0, y0, x1, y1, 0, b );
+                }
+                
+                // Draw Focal Points
+                // draw points f1
+                ctx.strokeStyle = "black";
+                ctx.fillStyle = "black";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(f1_x,f1_y,3.5,0,2*Math.PI,false);
+                ctx.fill();
+                ctx.stroke();
+                
+                // draw point f2
+                ctx.beginPath();
+                ctx.arc(f2_x,f2_y,3.5,0,2*Math.PI,false);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Draw Object
+		drawLine(ctx, 3, "black", s1_x, y0, s1_x, s1_y );
+                
+                // Draw Arrowhead on the Object
+		drawTwoLines(ctx, 2, "black", s1_x - (s1_height*.1), s1_y + (s1_height*.1), s1_x, s1_y, s1_x + (s1_height*.1), s1_y + (s1_height*.1) );
+                
+                // Draw Object vertical height ho:
+		drawLine(ctx, 1, "black", s1_x - .1*s1, y0, s1_x - .1*s1, s1_y );
+                
+                // Draw Arrowheads to ho
+                drawTwoLines(ctx, 1, "black", s1_x - .075*s1, y0-(s1_height*.1), s1_x - .1*s1, y0, s1_x - .125*s1,y0-(s1_height*.1) );
+		drawTwoLines(ctx, 1, "black", s1_x - .075*s1, s1_y + (s1_height*.1), s1_x - .1*s1, s1_y, s1_x - .125*s1, s1_y + (s1_height*.1) );
+                
+                // Label Image distance ho
+                ctx.font = "12pt Georgia"
+                ctx.fillText("ho", s1_x - .075*s1, y0 - .5*s1_height);
+                
+                // Draw Object horizontal distance So
+		drawLine(ctx, 1, "black", x0, 0.95*h, s1_x, 0.95*h );
+		drawLine(ctx, 1, "black", s1_x, y0, s1_x, h );
+                
+                // Draw Arrowheads on So
+		drawTwoLines(ctx, 2, "black", s1_x + (s1*.1), 0.925*h, s1_x, 0.95*h, s1_x + (s1*.1), 0.975*h );
+		drawTwoLines(ctx, 2, "black", x0 - (s1*.1), 0.925*h, x0, 0.95*h, x0 - (s1*.1), 0.975*h );
+				
+                // Label Object distance So
+                ctx.font = "12pt Georgia"
+                ctx.fillText("So", s1_x + 0.5*s1, .9*h);
+                
+                // Draw Image
+                s2 = 1/(1/-s1 + 1/f1);
+                s2_x = x0 + s2;
+                Mag = -s2/s1;
+                s2_height = s1_height * Mag;
+                s2_y = y0 - s2_height;
+		drawLine(ctx, 3, "black", s2_x, y0, s2_x, s2_y );
+                
+                // Draw Arrowhead on the Image
+		drawTwoLines(ctx, 2, "black", s2_x - (s2_height*.1), s2_y + (s2_height*.1), s2_x, s2_y, s2_x + (s2_height*.1), s2_y + (s2_height*.1) );
+                
+                // Draw Image vertical height hi:
+		drawLine(ctx, 1, "black", s2_x + .1*s2, y0, s2_x + .1*s2, s2_y );
+                
+                // Draw Arrowheads on hi
+		drawTwoLines(ctx, 1, "black", s2_x + .075*s2, y0 - (s2_height*.1), s2_x + .1*s2, y0, s2_x + .125*s2, y0 - (s2_height*.1) );
+		drawTwoLines(ctx, 1, "black", s2_x + .075*s2, s2_y + (s2_height*.1), s2_x + .1*s2, s2_y, s2_x + .125*s2, s2_y + (s2_height*.1) );
+                
+                // Label Image distance hi
+                ctx.font = "12pt Georgia"
+                ctx.fillText("hi", s2_x + .125*s2, y0 - .5*s2_height);
+                                                
+                // Draw Image horizontal distance Si
+		drawLine(ctx, 1, "black", x0, 0.95*h, s2_x, 0.95*h );
+		drawLine(ctx, 1, "black", s2_x, y0, s2_x, h );
+                
+                // Draw Arrowheads for Si
+                drawTwoLines(ctx, 2, "black", s2_x - (s2*.1), 0.925*h, s2_x, 0.95*h, s2_x - (s2*.1), 0.975*h );
+		drawTwoLines(ctx, 2, "black", x0 + (s2*.1), 0.925*h, x0, 0.95*h, x0 + (s2*.1), 0.975*h );
+                
+                // Label Image distance Si
+                ctx.font = "12pt Georgia"
+                ctx.fillText("Si", s2_x - 0.5*s2, .9*h);
+                
+                // Image Characteristics
+                ctx.font = "12pt Georgia"
+                ctx.fillText("Image:", 0.8*w, 0.05*h);
+                if (s1<=f1) { // Real Image
+                    ctx.fillText("  - Real", 0.8*w, 0.05*h+15);
+                    ctx.fillText("  - Inverted", 0.8*w, 0.05*h+30);
+                } else { // Virtual Image
+                    ctx.fillText("  - Virtual", 0.8*w, 0.05*h+15);
+                    ctx.fillText("  - Non-Inverted", 0.8*w, 0.05*h+30);
+                }
+                if ((Mag >= 1) || (Mag <= -1)) { // Magnified Image
+                    ctx.fillText("  - Magnified", 0.8*w, 0.05*h+45);
+                } else { // Minified Image
+                    ctx.fillText("  - Minified", 0.8*w, 0.05*h+45);
+                } 
+                // Update Data Output
+                document.getElementById('focal_length').innerHTML = (f1/10).toFixed(1);
+                document.getElementById('s1_x').innerHTML = (s1/10).toFixed(1);
+                document.getElementById('s1_y').innerHTML = (s1_height/10).toFixed(1);
+                var s2_distance = ((s2_x-x0)/10).toFixed(1);
+                s2_height = (s2_height/10).toFixed(1);
+                Mag = Mag.toFixed(2);
+                document.getElementById('s2_distance').innerHTML = s2_distance;
+                document.getElementById('s2_height').innerHTML = s2_height;
+                document.getElementById('Mag').innerHTML = Mag;
+                            
+            }	
+        }
+    </script>
+</head>
+<body onload="init()">
+    <h2>Ray Trace Diagram: Thin Lens Approximation - Concave Lens</h2>
+    <p>
+    The <font color="green">Parallel Ray</font> - travels parallel to the axis to center of lens, exits lens and travels through f2.<br />
+    The <font color="red">Central Ray</font> - travels through the center of the lens.<br />
+    The <font color="blue">Focal Ray</font> - travels through f1 to center of lens, exits lens and travels parallel to the axis.<br />
+    <!--The rays intersect at the head of the image.-->
+    </p>
+    <canvas id="Canvas1" width="800" height="400">Your browser does not support canvas.</canvas>
+    <p>	
+            Thin Lens Equation:<br />
+            <sup>1</sup>&frasl;<sub>&fnof;</sub> = <sup>1</sup>&frasl;<sub>S<sub>1</sub></sub> + <sup>1</sup>&frasl;<sub>S<sub>2</sub></sub><br />
+            Transverse Magnification (M<sub>T</sub>):<br />
+            M<sub>T</sub> = - S<sub>i</sub> &frasl; S<sub>o</sub><br />
+            or M<sub>T</sub> = - h<sub>i</sub> &frasl; h<sub>o</sub><br />
+    </p>
+    <p>
+            &fnof; = <span id="focal_length" style="font-size:125%;"></span><br />
+            S<sub>o</sub> = <span id="s1_x" style="font-size:125%;"></span><br />
+            h<sub>o</sub> = <span id="s1_y" style="font-size:125%;"></span><br />
+            S<sub>i</sub> = <span id="s2_distance" style="font-size:125%;"></span><br />
+            h<sub>i</sub> = <span id="s2_height" style="font-size:125%;"></span><br />
+            M<sub>T</sub> = <span id="Mag" style="font-size:125%;"></span><br />
+    </p>
+</body>
+</html>

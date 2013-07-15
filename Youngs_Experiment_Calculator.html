@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Young's Experiment - Calculator</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1, #omega {color: red;}
+       #y, #y1, #f {color: green;}
+       #r, #r1, #phi, #n {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+</style>
+<!-- raw -->
+<script type="text/javascript">
+var DEGREES_TO_RADIANS = Math.PI / 180;
+var RADIANS_TO_DEGREES = 180 / Math.PI;
+function Clear_All() {
+    document.getElementById("lambda1").innerHTML = null;
+    document.getElementById("d2").innerHTML = null;
+}
+function Youngs_Wavelength() {
+    var d1 = parseFloat(document.getElementById("d1").value);
+    var m1 = parseFloat(document.getElementById("m1").value);
+    var y3 = parseFloat(document.getElementById("y3").value);
+    var x3 = parseFloat(document.getElementById("x3").value);
+    document.getElementById("lambda1").innerHTML = Math.round((d1*y3)/(m1*x3) *100000)/10;
+    }
+function Youngs_Slit_Spacing() {
+    var lambda2 = parseFloat(document.getElementById("lambda2").value);
+    var m2 = parseFloat(document.getElementById("m2").value);
+    var y2 = parseFloat(document.getElementById("y2").value);
+    var x2 = parseFloat(document.getElementById("x2").value);
+    document.getElementById("d2").innerHTML = Math.round(((m2*lambda2*x2)/y2)/100)/100;
+    }
+</script> 
+</head>
+
+<body>
+<p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Clear_All()">Clear All</button>
+    </p>
+    <p>
+        Find the wavelength of light (<span id="n">&lambda;</span>): 
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	<span id="r">&lambda;</span> = (<span id="n">d</span>*<span id="y">y</span>)/(m*<span id="x">x</span>)<br /><br />
+	&nbsp;&nbsp;&nbsp;&nbsp; Enter slit spacing: <span id="n">d</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp; Order of maxima: m<br />
+	&nbsp;&nbsp;&nbsp;&nbsp; Maxima spacing: <span id="y">y</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp; Distance to screen: <span id="x">x</span>
+    </p>
+    <p>
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="n">d</span> = <input class="inputData" id="d1" value="0.6" /> mm
+	&nbsp;&nbsp;&nbsp;&nbsp; m = <input class="inputData" id="m1" value="1" />
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="y">y</span> = <input class="inputData" id="y3" value=".2" /> cm
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="x">x</span> = <input class="inputData" id="x3" value="5" /> m
+	&nbsp;&nbsp;&nbsp;&nbsp; <button id="calc_button1" onclick="Youngs_Wavelength()">Calculate</button>
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="r">&lambda;</span> = <span id="lambda1" class="result"></span> nm
+        <br /><br />
+    </p>
+    <p>
+        Find the slit spacing (<span id="n">d</span>):
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="n">d</span> = m * <span id="r">&lambda;</span> * (<span id="x">x</span> / <span id="y">y</span>))<br /><br />
+	&nbsp;&nbsp;&nbsp;&nbsp; Enter wavelength: <span id="r">&lambda;</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp; Order of maxima: m<br />
+	&nbsp;&nbsp;&nbsp;&nbsp; Maxima spacing: <span id="y">y</span><br />
+	&nbsp;&nbsp;&nbsp;&nbsp; Distance to screen: <span id="x">x</span>
+    </p>
+    <p>
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="r">&lambda;</span> = <input class="inputData" id="lambda2" value="650" /> nm
+	&nbsp;&nbsp;&nbsp;&nbsp; m = <input class="inputData" id="m2" value="1" />
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="y">y</span> = <input class="inputData" id="y2" value=".3" /> cm
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="x">x</span> = <input class="inputData" id="x2" value="5" /> m
+	&nbsp;&nbsp;&nbsp;&nbsp; <button id="calc_button1" onclick="Youngs_Slit_Spacing()">Calculate</button>
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="n">d</span> = <span id="d2" class="result"></span> mm
+        <br /><br />
+    </p>
+
+
+
+</body>
+</html>

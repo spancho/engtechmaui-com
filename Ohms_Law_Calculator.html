@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Ohm's Law - Calculator</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1, #omega {color: red;}
+       #y, #y1, #f {color: green;}
+       #r, #r1, #phi, #n {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+</style>
+<script type="text/javascript">
+function Clear_All() {
+    document.getElementById("voltage").innerHTML = null;
+    document.getElementById("current").innerHTML = null;
+    document.getElementById("resistance").innerHTML = null;
+}
+function Voltage() {
+    var I = parseFloat(document.getElementById("I1").value);
+    var R = parseFloat(document.getElementById("R1").value);
+    document.getElementById("voltage").innerHTML = (I*R).toExponential();
+    }
+function Current() {
+    var V = parseFloat(document.getElementById("V1").value);
+    var R = parseFloat(document.getElementById("R2").value);
+    document.getElementById("current").innerHTML = (V/R).toExponential();
+    }
+function Resistance() {
+    var V = parseFloat(document.getElementById("V2").value);
+    var I = parseFloat(document.getElementById("I2").value);
+    document.getElementById("resistance").innerHTML = (V/I).toExponential();
+    }
+</script>
+</head>
+
+<body>
+<p>
+    <u>Ohm's Law:</u>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        V = IR
+</p>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Clear_All()">Clear All</button>
+    </p>
+<h2>Voltage (V):</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        I: <input class="inputData" id="I1" value="1" />Ampheres (A)
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        R: <input class="inputData" id="R1" value="10"/>Ohms (&Omega;)
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Voltage()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        V = <span id="voltage" class="result"></span> Volts (V)
+    </p>
+<h2>Current (I)</h2>                                                                     
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        V: <input class="inputData" id="V1" value="10"/>Volts (V)                                             
+        &nbsp;&nbsp;&nbsp;&nbsp;                                                    
+        R: <input class="inputData" id="R2" value="100"/>Ohms (&Omega;)
+        &nbsp;&nbsp;&nbsp;&nbsp;                                                    
+        <button id="calc_button1" onclick="Current()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;                         
+        I = <span id="current" class="result"></span> Ampheres (A)  
+    </p>
+<h2>Resistance (R)</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        V: <input class="inputData" id="V2" value="10"/>Volts (V)
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        I: <input class="inputData" id="I2" value="0.5"/>Ampheres (A)
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Resistance()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        R = <span id="resistance" class="result"></span> Ohms (&Omega;)
+    </p>
+
+
+</body>
+</html>

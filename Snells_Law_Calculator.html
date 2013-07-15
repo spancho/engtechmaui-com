@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Snell's Law - Calculator</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1, #omega {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1, #phi, #n {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+</style>
+<script type="text/javascript">
+var DEGREES_TO_RADIANS = Math.PI / 180;
+var RADIANS_TO_DEGREES = 180 / Math.PI;
+function Clear_All() {
+    document.getElementById("theta2").innerHTML = null;
+    document.getElementById("n4").innerHTML = null;
+}
+function Snells_Angle() {
+    var n1 = parseFloat(document.getElementById("n1").value);
+    var n2 = parseFloat(document.getElementById("n2").value);
+    var theta1 = parseFloat(document.getElementById("theta1").value)*DEGREES_TO_RADIANS;
+    document.getElementById("theta2").innerHTML = Math.round(Math.asin((n1 / n2) * Math.sin(theta1))*RADIANS_TO_DEGREES*100)/100;
+    }
+function Snells_IndexOfRefraction() {
+    // needed to use different variable names for the text fields in the html page
+    // n3 is the same as n1
+    // theta3 is the same as theta1
+    // theta4 is the same as theta2
+    var n3 = parseFloat(document.getElementById("n3").value);
+    var theta3 = parseFloat(document.getElementById("theta3").value)*DEGREES_TO_RADIANS;
+    var theta4 = parseFloat(document.getElementById("theta4").value)*DEGREES_TO_RADIANS;
+    document.getElementById("n4").innerHTML = Math.round(n3 * (Math.sin(theta3)/Math.sin(theta4))*1000)/1000;
+    }
+</script> 
+</head>
+
+<body>
+<p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Clear_All()">Clear All</button>
+    </p>
+<h2>Find Angle of Transmittance (<span id="theta">&theta;<sub>t</sub></span>). &nbsp;&nbsp;&nbsp;&nbsp; Enter <span id="n">n<sub>i</sub></span> and <span id="n">n<sub>t</sub></span>: </h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="theta">&theta;<sub>t</sub></span> = asin(<span id="n">n<sub>i</sub></span>/<span id="n">n<sub>t</sub></span>) * sin(<span id="theta">&theta;<sub>i</sub></span>)<br /><br />
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="n">n<sub>i</sub></span> = <input class="inputData" id="n1" value="1.0" />
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="n">n<sub>t</sub></span> = <input class="inputData" id="n2" value="1.33" />
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="theta">&theta;<sub>i</sub></span> = <input class="inputData" id="theta1" value="50" />°
+	&nbsp;&nbsp;&nbsp;&nbsp; <button id="calc_button1" onclick="Snells_Angle()">Calculate</button>
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="theta">&theta;<sub>t</sub></span> = <span id="theta2" class="result"></span>°
+        <br />
+    </p>
+<h2>Find n Transmit (n2):</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="n">n<sub>t</sub></span> = <span id="n">n<sub>i</sub></span> * (sin(<span id="theta">&theta;<sub>i</sub></span>)/sin(<span id="theta">&theta;<sub>t</sub></span>)<br /><br />
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="n">n<sub>i</sub></span> =<input class="inputData" id="n3" value="1.0" />
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="theta">&theta;<sub>i</sub></span> = <input class="inputData" id="theta3" value="50" />°
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="theta">&theta;<sub>t</sub></span> = <input class="inputData" id="theta4" value="35.17" />°
+	&nbsp;&nbsp;&nbsp;&nbsp; <button id="calc_button1" onclick="Snells_IndexOfRefraction()">Calculate</button>
+	&nbsp;&nbsp;&nbsp;&nbsp; <span id="n">n<sub>t</sub></span> = <span id="n4" class="result"></span>
+        <br /><br />
+    </p>
+
+
+</body>
+</html>

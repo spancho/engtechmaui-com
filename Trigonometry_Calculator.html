@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Trig Calculator</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+       font-size: 125%;
+       font-weight: bold;
+       color: #1e3cbf;
+       }
+       #x, #x1 {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1 {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+           font-size: 125%;
+           font-weight: bold;
+       }
+</style>
+<script type="text/javascript">
+function Clear_All() {
+    document.getElementById("angle").innerHTML = null;
+    document.getElementById("magnitude").innerHTML = null;
+    document.getElementById("real").innerHTML = null;
+    document.getElementById("imaginary").innerHTML = null;
+    document.getElementById("to_radians").innerHTML = null;
+    document.getElementById("to_degrees").innerHTML = null;
+}
+function Phasor() {
+    var X = parseFloat(document.getElementById("X").value);
+    var Y = parseFloat(document.getElementById("Y").value);
+    var angle;
+    if (X >= 0 && Y >= 0 ) { // Quadrant I
+        angle = Math.round(Math.atan(Math.abs(Y/X))*180/(Math.PI)*1000)/1000;
+    } else if (X >= 0 && Y < 0) { // Quadrant IV
+        angle = 360 - Math.round(Math.atan(Math.abs(Y/X))*180/(Math.PI)*1000)/1000; 
+    } else if (X < 0 && Y >= 0) { // Quadrant II
+        angle = 180 - Math.round(Math.atan(Math.abs(Y/X))*180/(Math.PI)*1000)/1000;
+    } else { // X < 0 Y < 0 - Quadrant III
+        angle = 180 + Math.round(Math.atan(Math.abs(Y/X))*180/(Math.PI)*1000)/1000;
+    }
+    document.getElementById("angle").innerHTML = Math.round(angle*100)/100;
+    var square = Math.sqrt(Math.pow(X,2) + Math.pow(Y,2));
+    document.getElementById("magnitude").innerHTML = Math.round(square*100)/100;
+    }
+function Clear_Phasor() {
+    document.getElementById("angle").innerHTML = null;
+    document.getElementById("magnitude").innerHTML = null;
+    }
+function Polar_Coordinates() {
+    var r = parseFloat(document.getElementById("R").value);
+    var theta = parseFloat(document.getElementById("Theta").value);
+    var Real = r*Math.cos(theta*Math.PI/180)
+    document.getElementById("real").innerHTML = Math.round(Real*1000)/1000;
+    var Imaginary = r*Math.sin(theta*Math.PI/180);
+    document.getElementById("imaginary").innerHTML = Math.round(Imaginary*1000)/1000;
+    }
+function Clear_Polar() {
+    document.getElementById("real").innerHTML = null;
+    document.getElementById("imaginary").innerHTML = null;
+    }
+function To_Radians() {
+    var degree = parseFloat(document.getElementById("degrees").value);
+    Real = degree * Math.PI/180
+    document.getElementById("to_radians").innerHTML = Math.round(Real*10000)/10000;
+    }
+function Clear_Radians() {
+    document.getElementById("to_radians").innerHTML = null;
+    }
+function To_Degrees() {
+    var radian = parseFloat(document.getElementById("radians").value);
+    Real = radian * 180/Math.PI
+    document.getElementById("to_degrees").innerHTML = Math.round(Real*1000)/1000;
+    }
+function Clear_Degrees() {
+    document.getElementById("to_degrees").innerHTML = null;
+    }
+</script>
+</head>
+
+<body>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <button id="calc_button1" onclick="Clear_All()">Clear All</button>
+</p>
+
+<h2>Given <span id="x">x</span> and <span id="y">y</span>, find <span id="r">r</span> and <span id="theta">&theta;</span>.
+    &nbsp;&nbsp;&nbsp;&nbsp; Enter <span id="x">x</span> and <span id="y">y</span>:</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp; <span id="x">x</span>: <input class="inputData" id="X" value="3" />&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp; <span id="y">y</span>: <input class="inputData" id="Y" value="4"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Phasor()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp; 
+        <span id="theta">&theta;</span> = Tan<sup>-1</sup> ( <span id="y"><sup>y</sup></span>&frasl;<span id="x"><sub>x</sub></span> ) = <span id="angle" class="result"></span>°
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        
+        <span id="r">r</span> = &radic;(<span id="x">x<sup>2</sup></span> + <span id="y">y<sup>2</sup></span>) = <span id="magnitude" class="result"></span>
+     
+    </p>
+<h2>Given <span id="r">r</span> and <span  id="theta">&theta;</span>, find <span id="x">x</span> and <span id="y">y</span>
+    &nbsp;&nbsp;&nbsp;&nbsp; Enter <span id="r">r</span> and <span id="theta">&theta;</span>:</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp; <span id="r">r</span>: <input class="inputData" id="R" value="5"/> 
+        &nbsp;&nbsp;&nbsp;&nbsp; <span id="theta">&theta;</span>: <input class="inputData" id="Theta" value="53.13"/>°
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Polar_Coordinates()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x</span> = <span id="r">r </span>Cos <span id="theta">&theta;</span> = <span id="real" class="result"></span>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y</span> = <span id="r">r </span>Sin <span id="theta">&theta;</span> = <span id="imaginary" class="result"></span>
+      
+    </p>
+<h2>Convert Degrees to Radians</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp; Enter angle <span id="theta">&theta;</span> in degrees  = <input class="inputData" id="degrees" value="53.13"/>° 
+        <button id="calc_button1" onclick="To_Radians()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp; radians = <span id="to_radians" class="result"></span>
+   
+    </p>
+<h2>Convert Degrees to Radians</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp; Enter angle <span id="theta">&theta;</span> in radians = <input class="inputData" id="radians" value=".75"/> 
+        <button id="calc_button1" onclick="To_Degrees()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp; degrees = <span id="to_degrees" class="result" ></span>°
+    </p>
+
+
+</body>
+</html>

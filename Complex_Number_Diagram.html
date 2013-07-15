@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Complex Numbers - Diagram</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1 {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1 {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }            
+        #Canvas1 {
+            border: dotted 1px black;
+            background-color: #D4E6F4;
+            float: right;
+            /*padding-right: 300px;*/
+            margin-right: 20%;
+        }
+    </style>
+    <script type="text/javascript">
+        var dragging = false;
+        var background;
+        var x,y;
+        var hyp, opp, adj;
+        var sin_theta, cos_theta, tan_theta, theta_radians;
+        
+        function drawLine(cnvs, width, style, x_start, y_start, x_stop, y_stop) {
+            cnvs.lineWidth = width;
+            cnvs.strokeStyle = style;
+            cnvs.beginPath();
+            cnvs.moveTo(x_start,y_start);
+            cnvs.lineTo(x_stop,y_stop);
+            cnvs.stroke();		
+        }
+        
+        function init() {
+            var theta_1 = document.getElementById('theta_1');
+            var theta_2 =    document.getElementById('theta_2');
+            var theta_rad =    document.getElementById('theta_rad');
+            var mag_1 =    document.getElementById('mag_1');
+            var mag_2 =    document.getElementById('mag_2');
+            var x_loc =    document.getElementById('x_loc');
+            var y_loc =    document.getElementById('y_loc');
+            var canvas = document.getElementById('Canvas1');
+            var ctx = canvas.getContext("2d");
+            var w = canvas.width;
+            var h = canvas.height;
+            var x0 = w/2;		var y0 = h/2;
+            var r = 0.8*y0;
+            var theta = 45;
+            x = x0 + r * Math.cos(theta*Math.PI/180);
+            y = y0 - r * Math.sin(theta*Math.PI/180);
+            var x_new, y_new;
+            
+            // Draw the x-axis
+            drawLine(ctx, 2, "black", 0, y0, w, y0 );
+            ctx.font = "16pt Georgia"
+            ctx.fillText("x", w-50, y0+25);
+            ctx.fillText("Re{s}", w-50, y0+46);
+            
+            // Draw x-axis tick marks
+            for (var i =0; i <= w; i=i+20){
+                drawLine(ctx, 1, "black", i, y0-10, i, y0+10 );
+            }
+            
+            // Draw the y-axis
+            drawLine(ctx, 2, "black", x0, 0,x0, h);
+            ctx.fillText("y", x0 + 25, 12);
+            ctx.fillText("Im{s}", x0 + 25, 36);
+            
+            // Dray y-axis tick marks
+            for (var i =0; i <= w; i=i+20){
+                drawLine(ctx, 1, "black", x0-10, i, x0+10, i );
+            }
+    
+            // Label the Quadrants
+            ctx.font = "20pt Georgia"
+            ctx.fillText("I", w-35, +25);
+            ctx.fillText("II", +15, +25);
+            ctx.fillText("III", +15, h-25);
+            ctx.fillText("IV", w-35, h-25);
+            
+            background = ctx.getImageData(0,0,w,h);
+            
+            redraw();
+                                            
+            canvas.onmousedown = function(evt) {
+                dragging = true;
+                var rect = canvas.getBoundingClientRect();
+                x = evt.clientX - rect.left;
+                y = evt.clientY - rect.top;
+                
+                hyp = Math.sqrt((y-y0)*(y-y0)+(x-x0)*(x-x0));
+                adj = Math.sqrt((x-x0)*(x-x0));
+                if ((x < x0) && (y > y0)) { // Quadrant I
+                        theta = Math.floor(Math.acos(adj/hyp)*180/Math.PI +180);
+                } else if ((x < x0) && (y < y0)) { // Quadrant II
+                        theta = Math.floor(180 - Math.acos(adj/hyp)*180/Math.PI);
+                } else if ((x > x0) && (y < y0)) { // Quadrant III
+                        theta = Math.floor(Math.acos(adj/hyp)*180/Math.PI);
+                } else { // Quadrant IV
+                        theta = Math.floor(360 - Math.acos(adj/hyp)*180/Math.PI);
+                } 
+                
+                redraw();
+            }
+            canvas.onmouseup = function(evt) {
+                dragging = false;
+            }
+            canvas.onmousemove = function(evt) {
+                if(!dragging) return;
+                var rect = canvas.getBoundingClientRect();
+                x = evt.clientX - rect.left;
+                y = evt.clientY - rect.top;
+                
+                hyp = Math.sqrt((y-y0)*(y-y0)+(x-x0)*(x-x0));
+                adj = Math.sqrt((x-x0)*(x-x0));
+                if ((x < x0) && (y > y0)) { // Quadrant I
+                        theta = Math.floor(Math.acos(adj/hyp)*180/Math.PI +180);
+                } else if ((x < x0) && (y < y0)) { // Quadrant II
+                        theta = Math.floor(180 - Math.acos(adj/hyp)*180/Math.PI);
+                } else if ((x > x0) && (y < y0)) { // Quadrant III
+                        theta = Math.floor(Math.acos(adj/hyp)*180/Math.PI);
+                } else { // Quadrant IV
+                        theta = Math.floor(360 - Math.acos(adj/hyp)*180/Math.PI);
+                } 
+                
+                redraw();
+            }
+            
+            
+            function redraw(){
+                // restore background
+                ctx.putImageData(background,0,0);
+                
+                // Update Output Panel: Theta degrees and Theta radians, Magnitude, x, y
+                tan_theta = (cos_theta/sin_theta).toFixed(3);
+                theta_radians = (theta * Math.PI/180).toFixed(3);
+                pixel_num = (Math.sqrt( Math.pow(x-x0,2)+ Math.pow(y-y0,2)));
+                theta_1.innerHTML = theta;
+                theta_2.innerHTML = theta;
+                theta_rad.innerHTML = theta_radians;
+                mag_1.innerHTML = (pixel_num/20).toFixed(1);
+                mag_2.innerHTML = (pixel_num/20).toFixed(1);
+                x_loc.innerHTML = ((x-x0)/20).toFixed(1);
+                y_loc.innerHTML = ((y0-y)/20).toFixed(1);
+                
+                // Draw Vector
+                drawLine(ctx, 3, "blue", x0, y0, x, y );
+                
+                 // Draw Arrowheads
+                drawLine(ctx, 2, "blue", x, y, x, y + 0.25*pixel_num*Math.sin(theta_radians) );
+                drawLine(ctx, 2, "blue", x, y, x - 0.25*pixel_num*Math.cos(theta_radians), y );
+                               //Draw Arc
+                ctx.strokeStyle = '#ff0099';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(x0, y0, pixel_num*.65, 2*Math.PI-theta_radians,2*Math.PI,false);
+                ctx.stroke();
+                    
+            }
+        }
+        window.addEventListener( "load", init, false );
+    </script>
+</head>
+<body>
+<!--<body onload="init()">-->
+    <h2>Vector: Magnitude, Angle; Phasor Notation: <span id="r">r</span> &ang; <span id="theta">&theta;</span></h2>
+    <div>
+        <p>Click and drag vector to change the magnitude and the angle <span id="theta">&theta;</span>.<br /></p>
+    </div>
+    <canvas id="Canvas1" width="400" height="400">Your browser does not support canvas.</canvas>
+    <p>
+    Magnitude: <span id="r">|r|</span> = &radic;(<span id="x">x<sup>2</sup></span> + <span id="y">y<sup>2</sup></span>)<br/>
+    Angle: <span id="theta">&theta;</span> = Tan<sup>-1</sup>(<span id="y"><sup>y</sup></span>&frasl;<span id="x"><sub>x</sub></span>)<br />
+    
+    Click on graph to change |<span id="r">r</span>| and <span id="theta">&theta;</span>.<br />
+    
+    Magnitude |<span id="r">r</span>| = <span id="mag_1" class="result"></span><br />
+    
+    <span id="theta">&theta;</span> [degrees] = <span id="theta_1" class="result"></span>°<br />
+    <span id="theta">&theta;</span> [radians] = <span id="theta_rad" class="result"></span><br />
+    
+    Polar Form: <br />
+    <span id="mag_2" class="result"></span> &ang; <span id="theta_2" class="result"></span>°<br />
+    
+     Rectangular Form: <br />
+     <span id="x">x</span> + j <span id="y">y</span> =   <span id="x_loc" class="result"></span> + 
+      j <span id="y_loc" class="result"></span><br />
+    </p>
+</body>
+</html>

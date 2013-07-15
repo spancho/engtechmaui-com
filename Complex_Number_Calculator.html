@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Complex Numbers - Calculator</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .message{
+              font-size: 100%;
+              font-weight: bold;
+              color: blue;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1 {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1 {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+</style>
+<script type="text/javascript">
+function Clear_All() {
+    Display_Complex_Result(null, null, "resultAddition");
+    Display_Complex_Result(null, null, "resultSubtraction");
+    Display_Complex_Result(null, null, "resultMultiplication");
+    Display_Complex_Result(null, null, "resultDivision");
+}
+function checkEntry(id, value, assignment){
+    if (isNaN(value)) {
+        document.getElementById( id ).value = assignment;
+        return assignment;
+        }
+    return value;
+}
+function Display_Complex_Result(re, im, output) {
+    if (re == null && im == null) {
+        document.getElementById(output).innerHTML ="";
+    } else {
+        if (im >= 0) {
+            document.getElementById(output).innerHTML = re + " + j" + im;
+        } else { // im < 0
+            document.getElementById(output).innerHTML = re + " - j" + -im;
+        }
+    }
+}
+function Add_Complex() {
+    var sum_re = Math.round((checkEntry("re1", parseFloat(re1.value), "0") + checkEntry("re2", parseFloat(re2.value), "0"))*1000)/1000;
+    var sum_im = Math.round((checkEntry("im1", parseFloat(im1.value), "0") + checkEntry("im2", parseFloat(im2.value), "0"))*1000)/1000;
+    Display_Complex_Result(sum_re, sum_im, "resultAddition");
+    }
+function Subtract_Complex() {
+    var difference_re = Math.round((checkEntry("re3", parseFloat(re3.value), "0") - checkEntry("re4", parseFloat(re4.value), "0"))*1000)/1000;
+    var difference_im = Math.round((checkEntry("im3", parseFloat(im3.value), "0") - checkEntry("im4", parseFloat(im4.value), "0"))*1000)/1000;
+    Display_Complex_Result(difference_re, difference_im, "resultSubtraction");
+    }
+function Multiply_Complex() {
+    var re_5 = checkEntry("re5", parseFloat(re5.value), "0");
+    var re_6 = checkEntry("re6", parseFloat(re6.value), "0");
+    var im_5 = checkEntry("im5", parseFloat(im5.value), "0");
+    var im_6 = checkEntry("im6", parseFloat(im6.value), "0");
+    var mul_re = Math.round((re_5*re_6 - im_5*im_6)*1000)/1000;
+    var mul_im = Math.round((re_5*im_6 + im_5*re_6)*1000)/1000;
+    Display_Complex_Result(mul_re, mul_im, "resultMultiplication");
+    }
+function Divide_Complex() {
+    var re_7 = checkEntry("re7", parseFloat(re7.value), "0");
+    var re_8 = checkEntry("re8", parseFloat(re8.value), "0");
+    var im_7 = checkEntry("im7", parseFloat(im7.value), "0");
+    var im_8 = checkEntry("im8", parseFloat(im8.value), "0");
+    if(re_8== "0" && im_8 == "0") {
+        errorMessageDivByZero.innerHTML = "Cannot divide by zero! Enter non-zero value in second complex number."
+        document.getElementById("resultDivision").innerHTML = null;
+        return;
+    } else {
+        errorMessageDivByZero.innerHTML = null;
+    }
+    var X_numerator = re_7*re_8 + im_7*im_8;
+    var Y_numerator = -re_7*im_8 + im_7*re_8;
+    var denom = re_8*re_8 + im_8*im_8;
+    var div_re = ((X_numerator/denom)).toExponential(5);  //Math.round(Real*1000)/1000
+    var div_im = ((Y_numerator/denom)).toExponential(5);  
+    Display_Complex_Result(div_re, div_im, "resultDivision");
+    }
+ var helpArray = [  "Enter the real value of first complex number.",
+                    "Enter the imaginary value of first complex number.",
+                    "Enter the real value of second complex number.",
+                    "Enter the imaginary value of second complex number.",
+                    "" ];
+var helpText;
+var helpTextAdd;
+var helpTextSub;
+var helpTextMul;
+var helpTextDiv;
+var errorMessageDivByZero;
+    // initialize helpTextDiv and register event handlers
+function initForm()
+{
+   var re1 = document.getElementById("re1");
+   var re2 = document.getElementById("re2");
+   var re3 = document.getElementById("re3");
+   var re4 = document.getElementById("re4");
+   var re5 = document.getElementById("re5");
+   var re6 = document.getElementById("re6");
+   var re7 = document.getElementById("re7");
+   var re8 = document.getElementById("re8");
+   var im1 = document.getElementById("im1");
+   var im2 = document.getElementById("im2");
+   var im3 = document.getElementById("im3");
+   var im4 = document.getElementById("im4");
+   var im5 = document.getElementById("im5");
+   var im6 = document.getElementById("im6");
+   var im7 = document.getElementById("im7");
+   var im8 = document.getElementById("im8");
+   helpTextAdd = document.getElementById( "messageAddition" );
+   helpTextSub = document.getElementById( "messageSubtraction" );
+   helpTextMul = document.getElementById( "messageMultiplication" );
+   helpTextDiv = document.getElementById( "messageDivision" );   
+   errorMessageDivByZero = document.getElementById( "errorMessageDivByZero" );
+   
+   // register listeners
+   additionListeners();
+   subtractionListeners();
+   multiplicationListeners();
+   divisionListeners();
+} // end function init
+
+function additionListeners(){
+   registerListeners(re1, 0,"add" );
+   registerListeners(im1, 1,"add" );
+   registerListeners(re2, 2,"add" );
+   registerListeners(im2, 3,"add" ); 
+}
+
+function subtractionListeners() {
+   registerListeners(re3, 0, "sub" );
+   registerListeners(im3, 1, "sub" );
+   registerListeners(re4, 2, "sub" );
+   registerListeners(im4, 3, "sub" ); 
+}
+
+function multiplicationListeners() {
+   registerListeners(re5, 0, "mul" );
+   registerListeners(im5, 1, "mul" );
+   registerListeners(re6, 2, "mul" );
+   registerListeners(im6, 3, "mul" ); 
+}
+function divisionListeners() {
+   registerListeners(re7, 0, "div" );
+   registerListeners(im7, 1, "div" );
+   registerListeners(re8, 2, "div" );
+   registerListeners(im8, 3, "div" ); 
+}
+// utility function to help register events
+function registerListeners( object, messageNumber, operation )
+{
+    if (operation === "add") {
+        object.addEventListener( "focus", 
+           function() { helpTextAdd.innerHTML = helpArray[ messageNumber ]; },
+           false );
+        object.addEventListener( "blur", 
+           function() { helpTextAdd.innerHTML = helpArray[ 4 ]; }, false );
+    } else if (operation ==="sub") {
+        object.addEventListener( "focus", 
+          function() { helpTextSub.innerHTML = helpArray[ messageNumber ]; },
+          false );
+        object.addEventListener( "blur", 
+          function() { helpTextSub.innerHTML = helpArray[ 4 ]; }, false );        
+    } else if (operation ==="mul") {
+        object.addEventListener( "focus", 
+          function() { helpTextMul.innerHTML = helpArray[ messageNumber ]; },
+          false );
+        object.addEventListener( "blur", 
+          function() { helpTextMul.innerHTML = helpArray[ 4 ]; }, false );        
+    } else if (operation ==="div") {
+        object.addEventListener( "focus", 
+          function() { helpTextDiv.innerHTML = helpArray[ messageNumber ]; },
+          false );
+        object.addEventListener( "blur", 
+          function() { helpTextDiv.innerHTML = helpArray[ 4 ]; }, false );        
+    }
+} // end function registerListener
+window.addEventListener( "load", initForm, false );
+</script>
+</head>
+<body>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <button id="calc_button1" onclick="Clear_All()">Clear All</button>
+</p>
+
+<h4> Add Complex Numbers:  (<span id="x">x<sub>1</sub></span> + j <span id="y">y<sub>1</sub></span>) + (<span id="x">x<sub>2</sub></span> + j <span id="y">y<sub>2</sub></span>).
+    &nbsp;&nbsp; Enter <span id="x">x<sub>1</sub></span>, <span id="y">y<sub>1</sub></span>, <span id="x">x<sub>2</sub></span>, <span id="y">y<sub>2</sub></span>:</h4>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x<sub>1</sub></span>: <input id="re1" class="inputData" value="3" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y<sub>1</sub></span>: <input id="im1" class="inputData" value="4"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x<sub>2</sub></span>: <input id="re2" class="inputData" value="2" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y<sub>2</sub></span>: <input id="im2" class="inputData" value="6"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Add_Complex()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="resultAddition" class="result"></span>
+    </p>
+    <p class="message" id="messageAddition" ></p>
+    
+<h4> Subtract Complex Numbers:  (<span id="x">x<sub>1</sub></span> + j <span id="y">y<sub>1</sub></span>) - (<span id="x">x<sub>2</sub></span> + j <span id="y">y<sub>2</sub></span>).
+    &nbsp;&nbsp; Enter <span id="x">x<sub>1</sub></span>, <span id="y">y<sub>1</sub></span>, <span id="x">x<sub>2</sub></span>, <span id="y">y<sub>2</sub></span>:</h4>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x<sub>1</sub></span>: <input id="re3" class="inputData" value="3" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y<sub>1</sub></span>: <input id="im3" class="inputData" value="4"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x<sub>2</sub></span>: <input id="re4" class="inputData" value="2" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y<sub>2</sub></span>: <input id="im4" class="inputData" value="6"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Subtract_Complex()">Calculate</button> 
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="resultSubtraction" class="result"></span>
+    </p>
+    <p class="message" id="messageSubtraction" ></p>
+    
+<h4> Multiply Complex Numbers:  (<span id="x">x<sub>1</sub></span> + j <span id="y">y<sub>1</sub></span>)(<span id="x">x<sub>2</sub></span> + j <span id="y">y<sub>2</sub></span>).
+    &nbsp;&nbsp; Enter <span id="x">x<sub>1</sub></span>, <span id="y">y<sub>1</sub></span>, <span id="x">x<sub>2</sub></span>, <span id="y">y<sub>2</sub></span>:</h4>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x<sub>1</sub></span>: <input id="re5" class="inputData" value="3" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y<sub>1</sub></span>: <input id="im5" class="inputData" value="4"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x<sub>2</sub></span>: <input id="re6" class="inputData" value="2" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y<sub>2</sub></span>: <input id="im6" class="inputData" value="6"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Multiply_Complex()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="resultMultiplication" class="result"></span> 
+    </p>
+    <p class="message" id="messageMultiplication" ></p>
+    
+<h4> Divide Complex Numbers:  (<span id="x">x<sub>1</sub></span> + j <span id="y">y<sub>1</sub></span>) / (<span id="x">x<sub>2</sub></span> + j <span id="y">y<sub>2</sub></span>).
+    &nbsp;&nbsp; Enter <span id="x">x<sub>1</sub></span>, <span id="y">y<sub>1</sub></span>, <span id="x">x<sub>2</sub></span>, <span id="y">y<sub>2</sub></span>:</h4>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x<sub>1</sub></span>: <input id="re7" class="inputData" value="3" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y<sub>1</sub></span>: <input id="im7" class="inputData" value="4"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="x">x<sub>2</sub></span>: <input id="re8" class="inputData" value="2" />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="y">y<sub>2</sub></span>: <input id="im8" class="inputData" value="6"/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Divide_Complex()">Calculate</button> <br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        (<span id="x">x<sub>1</sub></span> + j <span id="y">y<sub>1</sub></span>)<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;----------- &nbsp;&nbsp; = &nbsp;&nbsp; 
+        <span id="resultDivision" class="result"></span><span style="color: red" id="errorMessageDivByZero"></span><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        (<span id="x">x<sub>2</sub></span> + j <span id="y">y<sub>2</sub></span>)
+    </p>
+    <p class="message" id="messageDivision" ></p>
+</body>
+</html>

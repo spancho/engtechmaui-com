@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Series RLC - Calculator</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1, #omega {color: red;}
+       #y, #y1, #f {color: green;}
+       #r, #r1, #phi, #n {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+</style>
+<script type="text/javascript">
+function Clear_All() {
+    document.getElementById("omega").innerHTML = null;
+    document.getElementById("frequency").innerHTML = null;
+    document.getElementById("XL").innerHTML = null;
+    document.getElementById("XC").innerHTML = null;
+    document.getElementById("Z_tot_re").innerHTML = null;
+    document.getElementById("Z_tot_im").innerHTML = null;
+    document.getElementById("angle").innerHTML = null;
+    document.getElementById("tude").innerHTML = null;
+    document.getElementById("resonantFrequency").innerHTML = null;
+    document.getElementById("qualityFactor").innerHTML = null;
+    document.getElementById("bandwidth").innerHTML = null;
+    document.getElementById("to_radians").innerHTML = null;
+    document.getElementById("to_degrees").innerHTML = null;
+}
+function checkEntry(id, value, assignment){
+    if (isNaN(value)) {
+        document.getElementById( id ).value = assignment;
+        return assignment;
+        }
+    return value;
+}
+function Omega() {
+    var freq = parseFloat(document.getElementById("freq").value);
+    var omega = Math.round(Math.PI*2*freq*100)/100;
+    document.getElementById("omega").innerHTML = omega;
+    }
+function Frequency() {
+    var angularFrequency = parseFloat(document.getElementById("angularFrequency").value);
+    var frequency = Math.round((angularFrequency/(2*Math.PI))*100)/100;
+    document.getElementById("frequency").innerHTML = frequency;
+    }
+function Z_Rectangular() {
+    var Res = parseFloat(document.getElementById("Res").value);
+    var Ind = parseFloat(document.getElementById("Ind").value);
+    var Cap = parseFloat(document.getElementById("Cap").value);
+    var freq1 = parseFloat(document.getElementById("freq1").value);
+    Ind = checkEntry("Ind", Ind, "0");
+    Cap = checkEntry("Cap", Cap, "0");
+    Res = checkEntry("Res", Res, "0");
+    freq1 = checkEntry("freq1", freq1, "60");
+    var Z_tot_re = Math.round(Res*1000)/1000;
+    if (Ind == 0.0) {
+        document.getElementById("XL").innerHTML = "";
+    } else {
+        var XL = (2*Math.PI*freq1*Ind);
+        document.getElementById("XL").innerHTML = XL.toExponential(3);
+    }
+    if (Cap == 0.0) {
+        var Z_tot_im = Math.round((angular_f*Ind)*1000)/1000;
+        document.getElementById("XC").innerHTML = 0;
+    } else {
+        var Z_tot_im = Math.round(((2*Math.PI*freq1*Ind) - (1/(2*Math.PI*freq1*Cap)))*1000)/1000;
+        var XC = (1/(2*Math.PI*freq1*Cap));
+        document.getElementById("XC").innerHTML = XC.toExponential(3);
+    }
+    if (Cap == 0.0 || Ind == 0.0) {
+        document.getElementById("resonantFrequency").innerHTML = "";
+    } else {
+        var fr = (1/(2*Math.PI*Math.sqrt(Ind*Cap)));
+        // calculating Q-quality factor with XL at the resonant frequency
+        var resonantXL = (2*Math.PI*fr*Ind);
+        document.getElementById("resonantFrequency").innerHTML = fr.toExponential(3);
+        var Q = (resonantXL/Res);
+        var bandwidth = fr/Q;
+        document.getElementById("qualityFactor").innerHTML = Q.toExponential(3);
+        document.getElementById("bandwidth").innerHTML = bandwidth.toExponential(3);
+    }
+
+    document.getElementById("Z_tot_re").innerHTML = Z_tot_re;
+    document.getElementById("Z_tot_im").innerHTML = Z_tot_im;
+    var reference_angle = Math.round(Math.atan(Math.abs(Z_tot_im/Z_tot_re))*180/(Math.PI)*1000)/1000;
+    var angle;
+    if (Z_tot_re >= 0 && Z_tot_im >= 0 ) { // Quadrant I
+        angle = reference_angle;
+    } else if (Z_tot_re >= 0 && Z_tot_im < 0) { // Quadrant IV
+        angle = 360 - reference_angle; 
+    } else if (Z_tot_re < 0 && Z_tot_im >= 0) { // Quadrant II
+        angle = 180 - reference_angle;
+    } else { // Z_tot_re < 0 Z_tot_im < 0 - Quadrant III
+        angle = 180 + reference_angle;
+    }
+    document.getElementById("angle").innerHTML = Math.round(angle*1000)/1000;
+    var tude = Math.round(Math.sqrt(Math.pow(Z_tot_re,2) + Math.pow(Z_tot_im,2))*1000)/1000;
+    document.getElementById("tude").innerHTML = tude;
+    }
+function reactance() {
+
+}
+function To_Radians() {
+    var degree = parseFloat(document.getElementById("degrees").value);
+    Real = degree * Math.PI/180
+    document.getElementById("to_radians").innerHTML = Math.round(Real*10000)/10000;
+    }
+function To_Degrees() {
+    var radian = parseFloat(document.getElementById("radians").value);
+    Real = radian * 180/Math.PI
+    document.getElementById("to_degrees").innerHTML = Math.round(Real*1000)/1000;
+    }
+</script>
+
+</head>
+
+<body>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Clear_All()">Clear All</button>
+    </p>
+<h2> Angular Frequency: &omega; = 2&pi;&fnof;</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        &fnof;: <input class = "inputData" id="freq" value="60" /> [Hz]
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Omega()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        &omega; = <span id="omega" class="result"></span> [rad/sec]
+        <br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        &omega;: <input class = "inputData" id="angularFrequency" value="377" /> [Hz]
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Frequency()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        &fnof; = <span id="frequency" class="result"></span> [rad/sec]
+        <br /><br />
+    </p>
+    
+<h2> Total Impedance (Z<sub>tot</sub>) and Resonant Frequency (&fnof;<sub>r</sub>)for Series R-L-C:</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        R: <input class = "inputData" id="Res" value="12" /> [&Omega;]
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        L: <input class = "inputData" id="Ind" value=".3"/> [H]
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        C: <input class = "inputData" id="Cap" value="250e-6" /> [F]
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        &fnof;: <input class = "inputData" id="freq1" value="60" /> [Hz]<br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Z_Rectangular(); reactance();">Calculate</button> <br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        Reactaces:
+        X<sub>L</sub> = <span id="XL" class="result"></span> [&Omega;] &nbsp;&nbsp; and &nbsp;&nbsp;
+        X<sub>C</sub> = <span id="XC" class="result"></span> [&Omega;]
+        <br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        Z<sub>tot</sub> = <span id="Z_tot_re" class="result"></span> + j <span id="Z_tot_im" class="result"></span> [&Omega;] (Rectangular Form)
+        <br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        Z<sub>tot</sub> = <span id="tude" class="result"></span>&ang;<span id="angle" class="result"></span>° [&Omega;] (Phasor Form)
+        <br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        &fnof;<sub>r</sub> = <span id="resonantFrequency" class="result"></span> [Hz] (Resonant Frequency)
+        <br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        Q = <span id="qualityFactor" class="result"></span> (Resonant Quality Factor)
+        <br /><br />
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        BW = <span id="bandwidth" class="result"></span> [Hz] (Bandwidth)
+        <br /><br />
+    </p>
+    
+<h2>Convert Degrees to Radians</h2>
+    <p>
+        Enter angle <span id="theta">&theta;</span> in degrees  = <input class = "inputData" id="degrees" value="53.13"/>° 
+        <button id="calc_button1" onclick="To_Radians()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp; radians = <span id="to_radians" class="result"></span>
+        <br /><br />
+    </p>
+<h2>Convert Degrees to Radians</h2>
+    <p>
+        Enter angle <span id="theta">&theta;</span> in radians = <input class = "inputData" id="radians" value=".75"/> 
+        <button id="calc_button1" onclick="To_Degrees()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp; degrees = <span id="to_degrees" class="result" ></span>°
+        <br /><br />
+    </p>
+
+
+</body>
+</html>

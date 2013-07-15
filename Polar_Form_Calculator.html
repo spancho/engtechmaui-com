@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html>
+   <head>
+      <meta charset = "utf-8">
+      <title>Polar Form - Calculator</title>
+      <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       #calc_button1 {
+            height: auto;
+            width: auto;
+            border-radius: 5px;
+            margin-left: 20px;
+            opacity: .7;
+            background-color: #34cde5;
+            text-align: center;
+            color: black;
+            font-size: small;
+            font-family: Verdana, Arial, Sans-Serif;
+            display: inline-block
+            }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1 {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1 {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }            
+        #Canvas1 {
+            border: dotted 1px black;
+            background-color: #D4E6F4;
+            float: right;
+            /*padding-right: 300px;*/
+            margin-right: 20%;
+        }
+        
+        table       {  border-collapse:collapse; 
+                        background-color: lightblue;
+                        }
+                        
+        table, td, th
+                    {   /*border: 1px solid black; */
+                        padding: 4px;
+                        text-align: center;
+                        font-family: Verdana, Arial, Helvetica, sans-serif;
+                        font-weight: bold;}
+        td            { width: 120px; }
+        tr            { font-size: 150%; }
+        th            { text-align: center; 
+                        color: black;
+                        background-color: #EEE4B9;
+                        font-family: Verdana, Arial, Helvetica, sans-serif;}
+        tr.oddrow     { background-color: lightgreen; }
+        .inText         {width: 80px;}
+      </style>
+      <script>
+         function start() {
+            var outputRadians = document.getElementById("outputRadians");
+            var outputDegrees = document.getElementById("outputDegrees");
+            var addMag = document.getElementById("addMag");
+            var addTheta = document.getElementById("addTheta");
+            var subMag = document.getElementById("subMag");
+            var subTheta = document.getElementById("subTheta");
+            var mulMag = document.getElementById("mulMag");
+            var mulTheta = document.getElementById("mulTheta");
+            var divMag = document.getElementById("divMag");
+            var divTheta = document.getElementById("divTheta");
+            var X = document.getElementById("X");
+            var Y = document.getElementById("Y");
+            var X1 = document.getElementById("X1");
+            var Y1 = document.getElementById("Y1");
+            var X2 = document.getElementById("X2");
+            var Y2 = document.getElementById("Y2");
+            var maginitude = document.getElementById("magnitude");
+            var maginitude1 = document.getElementById("magnitude1");
+            var maginitude2 = document.getElementById("magnitude2");
+            var maginitude3 = document.getElementById("magnitude3");
+            var angle = document.getElementById("angle");
+            var angle1 = document.getElementById("angle1");
+            var angle2 = document.getElementById("angle2");
+            var angle3 = document.getElementById("angle3");
+            var angle4 = document.getElementById("angle4");
+      
+         } // end function start
+         
+         function complexMagnitude(x,y){
+            var result =(Math.sqrt(Math.pow(x,2) + Math.pow(y,2))).toExponential(5);
+            return result;
+        }
+        function complexAngle(x,y) {
+            var angle;
+            if (x >= 0 && y >= 0 ) { // Quadrant I
+                angle = Math.round(Math.atan(Math.abs(y/x))*180/(Math.PI)*1000)/1000;
+            } else if (x >= 0 && y < 0) { // Quadrant IV
+                angle = 360 - Math.round(Math.atan(Math.abs(y/x))*180/(Math.PI)*1000)/1000; 
+            } else if (x < 0 && y >= 0) { // Quadrant II
+                angle = 180 - Math.round(Math.atan(Math.abs(y/x))*180/(Math.PI)*1000)/1000;
+            } else { // x< 0 y < 0 - Quadrant III
+                angle = 180 + Math.round(Math.atan(Math.abs(y/x))*180/(Math.PI)*1000)/1000;
+            }
+            return angle;
+         }
+         function coordinatesVector1(){
+            var R_1 = parseFloat(R1.value);
+            var Theta_1 = parseFloat(Theta1.value);
+            var X_1 = R_1*Math.cos(Theta_1*Math.PI/180)
+            X1.innerHTML = Math.round(X_1*1000)/1000;
+            var Y_1 = R_1*Math.sin(Theta_1*Math.PI/180);
+            Y1.innerHTML = Math.round(Y_1*1000)/1000;
+         }
+         function coordinatesVector2(){
+            X2.innerHTML = Math.round(parseFloat(R2.value)*Math.cos(parseFloat(Theta2.value)*Math.PI/180)*1000)/1000;
+            Y2.innerHTML = Math.round(parseFloat(R2.value)*Math.sin(parseFloat(Theta2.value)*Math.PI/180)*1000)/1000;
+         }
+         function vectorParameters() {
+            var mag = complexMagnitude(parseFloat(X.value),parseFloat(Y.value));
+            var ang = complexAngle(parseFloat(X.value),parseFloat(Y.value));
+            magnitude.innerHTML = mag;
+            magnitude1.innerHTML = mag;
+            magnitude2.innerHTML = mag;
+            magnitude3.innerHTML = mag;
+            angle.innerHTML = ang;
+            angle1.innerHTML = ang;
+            angle2.innerHTML = ang;
+            angle3.innerHTML = ang;
+            angle4.innerHTML = ang;
+         }
+         function addVectors(){
+            var AddReal = parseFloat(R1.value)*Math.cos(parseFloat(Theta1.value)*Math.PI/180) + parseFloat(R2.value)*Math.cos(parseFloat(Theta2.value)*Math.PI/180);
+            var AddImaginary = parseFloat(R1.value)*Math.sin(parseFloat(Theta1.value)*Math.PI/180) + parseFloat(R2.value)*Math.sin(parseFloat(Theta2.value)*Math.PI/180);
+            addMag.innerHTML = complexMagnitude(AddReal,AddImaginary);
+            addTheta.innerHTML = complexAngle(AddReal,AddImaginary);
+         }
+         function subVectors(){
+            var AddReal = parseFloat(R1.value)*Math.cos(parseFloat(Theta1.value)*Math.PI/180) - parseFloat(R2.value)*Math.cos(parseFloat(Theta2.value)*Math.PI/180);
+            var AddImaginary = parseFloat(R1.value)*Math.sin(parseFloat(Theta1.value)*Math.PI/180) - parseFloat(R2.value)*Math.sin(parseFloat(Theta2.value)*Math.PI/180);
+            subMag.innerHTML = complexMagnitude(AddReal,AddImaginary);
+            subTheta.innerHTML = complexAngle(AddReal,AddImaginary);
+         }
+         function mulVectors(){
+            mulMag.innerHTML = (parseFloat(R1.value)*parseFloat(R2.value)).toExponential(5);
+            mulTheta.innerHTML = Math.round((parseFloat(Theta1.value) + parseFloat(Theta2.value))*1000)/1000;
+        }
+         function divVectors(){
+            divMag.innerHTML = (parseFloat(R1.value)/parseFloat(R2.value)).toExponential(5);
+            divTheta.innerHTML = Math.round((parseFloat(Theta1.value) - parseFloat(Theta2.value))*1000)/1000;
+         }
+         function to_Radians() { // first row function
+            var degree = parseFloat(inputDegrees.value);
+            Real = degree * Math.PI/180
+            outputRadians.innerHTML = Math.round(Real*10000)/10000;
+         }
+         function to_Degrees() { // second row function
+            var radian = parseFloat(inputRadians.value);
+            Real = radian * 180/Math.PI
+            outputDegrees.innerHTML = Math.round(Real*1000)/1000;
+         }
+         function clearRadians() {
+            outputRadians.innerHTML = "";
+         }
+         function clearDegrees() {
+            outputDegrees.innerHTML = "";
+         }
+         function clearAdd() {
+            addMag.innerHTML = "";
+            addTheta.innerHTML = "";
+         }
+         function clearSub() {
+            subMag.innerHTML = "";
+            subTheta.innerHTML = "";
+         }
+         function clearMul() {
+            mulMag.innerHTML = "";
+            mulTheta.innerHTML = "";
+         }
+         function clearDiv() {
+            divMag.innerHTML = "";
+            divTheta.innerHTML = "";
+         }
+         function clearV1() {
+            X1.innerHTML = "";
+            Y1.innerHTML = "";
+         }
+         function clearV2() {
+            X2.innerHTML = "";
+            Y2.innerHTML = "";
+         }
+         function clearVector() {
+            magnitude.innerHTML = "";
+            magnitude1.innerHTML = "";
+            magnitude2.innerHTML = "";
+            magnitude3.innerHTML = "";
+            angle.innerHTML = "";
+            angle1.innerHTML = "";
+            angle2.innerHTML = "";
+            angle3.innerHTML = "";
+            angle4.innerHTML = "";
+         }
+         window.addEventListener( "load", start, false );
+      </script>
+   </head>
+   <body>
+      <!--<header>
+         <h1>Polar Form Calculator</h1>
+      </header>-->
+      <article>
+         <section>
+            <h1>Convert Rectangular Coordinates (x,y) to Vector Parameters (magnitude, angle)</h1>
+            <table id="vectorInputs" >
+               <!--<caption>Input Vectors</caption>-->
+               <thead>
+                  <tr><th colspan = "2"><strong>X Y Coordinates</strong></th><th rowspan="2"></th><th colspan = "2"><strong>Vector Parameters</strong></th><th rowspan="2"></th></tr>
+                  <tr><th>X</th><th>Y</th><th>Magnitude</th><th>Angle &theta;</th></tr>
+               </thead>
+               <tbody>
+                  <tr>  <td><input class="inText" id="X" value="3" /></td>
+                        <td><input class="inText" id="Y" value="4" /></td>
+                        <td><button id="calc_button1" onclick="vectorParameters()">Parameters</button></td>
+                        <td><span id="magnitude" ></td><td><span id="angle" ></td>
+                        <td><button id="calc_button1" onclick="clearVector()">Clear</button></tr>
+                  
+               </tbody>
+            </table>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            Polar Form: <span id="magnitude1" class="result"></span> ( Cos( <span id="angle1" class="result"></span>) + j Sin( <span id="angle4" class="result"></span>) )<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            Phasor Notation: <span id="magnitude2" class="result"></span>&ang;<span id="angle2" class="result"></span> <br />
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            Exponential Notation: <span id="magnitude3" class="result"></span> e <sup>j <span id="angle3" class="result"></span></sup> 
+         </section>
+         <section>
+            <h1>Convert Vector Parameters (magnitude, angle) to Rectangular Coordinates (x,y)</h1>
+            <table>
+               <!--<caption>Input Vectors</caption>-->
+               <thead>
+                  <tr><th rowspan="2"></th><th colspan = "2"><strong>Vector Parameters</strong></th><th rowspan="2"></th><th colspan = "2"><strong>X Y Coordinates</strong><th rowspan="2"></th></tr>
+                  <tr>  <th>Magnitude</th><th>Angle &theta;</th><th>X</th><th>Y</th></tr>
+               </thead>
+               <tbody>
+                  <tr><td>V1:</td><td><input class="inText" id="R1"     value="7"     /></td>
+                                       <td><input class="inText" id="Theta1" value="73.13" /></td>
+                                       <td><button id="calc_button1" onclick="coordinatesVector1()">(x1, y1)</button></td>
+                                       <td><span id="X1" ></td><td><span id="Y1" ></td>
+                                       <td><button id="calc_button1" onclick="clearV1()">Clear</button></tr>
+                  <tr class="oddrow"><td>V2:</td></td><td><input class="inText" id="R2"     value="5"     /></td>
+                                       <td><input class="inText" id="Theta2" value="53.13" /></td>
+                                       <td><button id="calc_button1" onclick="coordinatesVector2()">(x2, y2)</button></td>
+                                       <td><span id="X2" ></td><td><span id="Y2" ></td>
+                                       <td><button id="calc_button1" onclick="clearV2()">Clear</button></tr>
+               </tbody>
+            </table>
+         </section>
+         <section>
+            <h1>Vector Math Operations: Addition, Subtraction, Multiplication, and Division</h1>
+            <table >
+               <!--<caption>Vector Operations</caption>-->
+               <thead>
+                  <tr><th rowspan="2" colspan="2"></th><th colspan="2">Vector Parameters</th><th rowspan="2"></th></tr>
+                  <tr><th>Magnitude</th><th>Angle</th></tr>
+               </thead>
+               <tbody>
+                  <tr><td>V1 + V2:</td><td><button id="calc_button1" onclick="addVectors()">Add</button></td><td><span id="addMag" ></td>
+                        <td><span id="addTheta" ></td><td><button id="calc_button1" onclick="clearAdd()">Clear Add</button></td></tr>
+                  
+                  <tr class="oddrow"><td>V1 - V2:</td><td><button id="calc_button1" onclick="subVectors()">Subtract</button></td><td><span id="subMag" ></td>
+                        <td><span id="subTheta" ></td><td><button id="calc_button1" onclick="clearSub()">Clear Sub</button></td></tr>
+                  
+                  <tr><td>V1 * V2:</td><td><button id="calc_button1" onclick="mulVectors()">Multiply</button></td><td><span id="mulMag" ></td>
+                           <td><span id="mulTheta" ></td><td><button id="calc_button1" onclick="clearMul()">Clear Mul</button></td></tr>
+                  
+                  <tr class="oddrow"><td>V1 / V2:</td><td><button id="calc_button1" onclick="divVectors()">Divide</button></td><td><span id="divMag" ></td>
+                        <td><span id="divTheta" ></td><td><button id="calc_button1" onclick="clearDiv()">Clear Div</button></td></tr>
+               </tbody>
+            </table>
+         </section>
+         <section>
+            <h1>Convert Degrees to Radians and Radians to Degrees</h1>
+            <table>
+               <!--<caption>Input Vectors</caption>-->
+               <thead>
+                  <tr><th></th><th><strong id="ct0">Input</strong></th><th></th><th></th><th><strong id="ct1">Output</strong></th><th></th></tr>
+                  
+               </thead>
+               <tbody>
+                  <tr>                 <td id="ct2">Degrees: </td><td><input class="inText" id="inputDegrees" value="45" /></td>
+                                       <td><button id="calc_button1" onclick="to_Radians()">Radians</button></td>
+                                       <td id="ct3">Radians: </td><td><span id="outputRadians" ></td></td>
+                                       <td><button id="calc_button1" onclick="clearRadians()">Clear</button></tr>
+                  
+                  <tr class="oddrow">  <td id="ct4">Radians: </td></td><td><input class="inText" id="inputRadians" value="1" /></td>
+                                       <td><button id="calc_button1" onclick="to_Degrees()">Degrees</button></td>
+                                       <td id="ct5">Degrees: </td><td><span id="outputDegrees" ></td></td>
+                                       <td><button id="calc_button1" onclick="clearDegrees()">Clear</button></tr>
+               </tbody>
+            </table>
+         </section>
+      </article>   
+   </body>
+</html>

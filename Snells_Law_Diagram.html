@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Snell's Law - Diagram</title>
+       <style type="text/css">
+              .inputData {
+                     width: 50px;
+              }
+              .result {
+                     font-size: 125%;
+                     font-weight: bold;
+                     color: #1e3cbf;
+              }
+              #x, #x1, #omega {color: red;}
+              #y, #y1 {color: green;}
+              #r, #r1, #phi, #n {color: blue;}
+              #theta {color: #ff0099;/*color: violet;*/}
+              #n {color: blue;}
+              p {
+                     font-size: 125%;
+                     font-weight: bold;
+              }
+       </style>
+    <script type="text/javascript">
+        var dragging = false;
+        var canvas;
+        var data = {"n1":1.0, "n2":1.33, "incident":{}, "refracted":{}};
+        var background;
+        
+        function init() {
+            canvas = document.getElementById("canvas");
+            var w = canvas.width;
+            var h = canvas.height;
+            data.n1 = parseFloat(document.getElementById("N1").value);
+            data.n2 = parseFloat(document.getElementById("N2").value);
+            // set (arbitrary) initial angle
+            move(h*Math.tan(Math.PI/3)/2,h/2);
+            
+            var g = canvas.getContext("2d");
+            
+            // draw background
+            g.fillStyle = "#" + new Array(5).join(Math.floor(15/data.n1).toString(16)) + "ff";
+            g.fillRect(0,0,w,h/2);
+            g.fillStyle = "#" + new Array(5).join(Math.floor(15/data.n2).toString(16)) + "ff";
+            g.fillRect(0,h/2,w,h);
+            
+            // draw normal line
+            g.beginPath();
+            g.strokeStyle = "#777777";
+            g.lineWidth = Math.min(w,h) * 0.5/100;
+            g.moveTo(w/2,0);
+            for(var i = 0; i < 10; i++) {
+                var tenth = h/10;
+                g.lineTo(w/2,((i+1)*tenth - tenth/5));
+                g.moveTo(w/2,(i+1)*tenth);
+            }
+            g.stroke();
+            
+            // save background image to redraw it later
+            background = g.getImageData(0,0,w,h);
+            
+            redraw();
+            
+            canvas.onmousedown = function(evt) {
+                dragging = true;
+                var rect = canvas.getBoundingClientRect();
+                var x = canvas.width/2 - (evt.clientX - rect.left);
+                var y = canvas.height/2 - (evt.clientY - rect.top);
+                move(x,y);
+                redraw();
+            }
+            canvas.onmouseup = function(evt) {
+                    dragging = false;
+            }
+            canvas.onmousemove = function(evt) {
+                if(!dragging) return;
+                var rect = canvas.getBoundingClientRect();
+                var x = canvas.width/2 - (evt.clientX - rect.left);
+                var y = canvas.height/2 - (evt.clientY - rect.top);
+                move(x,y);
+                redraw();
+            }
+        }
+        
+        function move(x, y) {
+            data.incident.angle = Math.atan((x)/(y));
+            data.incident.x1 = x;
+            data.incident.y1 = y;
+            data.incident.x2 = 0;
+            data.incident.y2 = 0;
+            
+            if(y < 0) {
+                data.refracted.angle = Math.asin((data.n2 / data.n1) * Math.sin(data.incident.angle));
+                data.refracted.y2 = -canvas.height;
+                data.refracted.x2 = -canvas.height*Math.tan(data.refracted.angle);
+                if(isNaN(data.refracted.angle)) {
+                    data.refracted.angle = -data.incident.angle;
+                    data.refracted.x2 = canvas.height*Math.tan(data.refracted.angle);
+                    data.refracted.y2 = canvas.height;
+                }
+                data.refracted.x1 = 0;
+                data.refracted.y1 = 0;
+                    
+            } else {
+                data.refracted.angle = Math.asin((data.n1 / data.n2) * Math.sin(data.incident.angle));
+                data.refracted.x1 = 0;
+                data.refracted.y1 = 0;
+                data.refracted.x2 = canvas.height*Math.tan(data.refracted.angle);
+                data.refracted.y2 = canvas.height;
+            }
+            
+            var label = document.getElementById("angle_of_incidence");
+            empty(label);
+            label.appendChild(document.createTextNode(Math.abs(Math.round(data.incident.angle*18000/Math.PI)/100)));
+            label = document.getElementById("angle_of_refraction");
+            empty(label);
+            label.appendChild(document.createTextNode(Math.abs(Math.round(data.refracted.angle*18000/Math.PI)/100)));
+        }
+        
+        function redraw() {
+            data.n1 = parseFloat(document.getElementById("N1").value);
+            data.n2 = parseFloat(document.getElementById("N2").value);
+            var g = canvas.getContext("2d");
+            g.putImageData(background,0,0);
+            // draw index of refraction
+            g.fillStyle = "black";
+            g.font = "12pt Georgia"
+            //g.font = (canvas.height / 15) + "px monospace";
+            g.fillText("ni=" + data.n1, canvas.width/20, canvas.height/10);
+            g.fillText("nt=" + data.n2, canvas.width/20, canvas.height/10 + canvas.height/2);
+            
+            // draw incident light path
+            var x = canvas.width/2 - canvas.height*Math.tan(data.incident.angle)/2;
+            var y = 0;
+            if(data.incident.y1 < 0) {
+                x = canvas.width/2 + canvas.height*Math.tan(data.incident.angle)/2;
+                y = canvas.height;
+            }
+            g.beginPath();
+            g.strokeStyle = "red";
+            g.lineWidth = Math.min(canvas.height,canvas.width) / 100;;
+            g.moveTo(x,y);
+            g.lineTo(canvas.width/2 - data.incident.x2,canvas.height/2 - data.incident.y2);
+            g.stroke();
+            
+            // draw straight light path as if light were not refracted
+            x = canvas.width/2 + canvas.height*Math.tan(data.incident.angle)/2;
+            y = canvas.height;
+            if(data.incident.y1 < 0) {
+                x = canvas.width/2 - canvas.height*Math.tan(data.incident.angle)/2;
+                y = 0;
+            }
+            g.beginPath();
+            g.strokeStyle = "#FFAAAA";
+            g.moveTo(canvas.width/2 - data.incident.x2,canvas.height/2 - data.incident.y2);
+            g.lineTo(x,y);
+            g.stroke();
+            
+            // draw refracted light path
+            g.beginPath();
+            g.strokeStyle = "green";
+            g.moveTo(canvas.width/2 - data.refracted.x1,canvas.height/2 - data.refracted.y1);
+            g.lineTo(canvas.width/2 + data.refracted.x2,canvas.height/2 + data.refracted.y2);
+            g.stroke();
+        }
+        
+        function empty(domNode) {
+            var count = 0;
+            while(domNode.hasChildNodes()) {
+                domNode.removeChild(domNode.firstChild);
+                count++;
+            }
+        }
+        
+        function debug(message) {
+            var debug = document.getElementById("debug");
+            empty(debug);
+            debug.appendChild(document.createTextNode(message));
+        }
+            
+    </script>    
+</head>
+<body onload="init()">
+    <div id="debug" style="position:absolute;top:0px;right:0px;"></div>
+    <h2>&nbsp;&nbsp;&nbsp;&nbsp;<span id="n">n<sub>i</sub></span> * sin(<span id="theta">&theta;<sub>i</sub></span>) = <span id="n">n<sub>t</sub></span> * sin(<span id="theta">&theta;<sub>t</sub></span>)</h2>
+    <div>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp; Change the index of refraction and redraw.
+            &nbsp;&nbsp;&nbsp;&nbsp; <span id="n">n<sub>i</sub></span> = <input class="inputData" id="N1" value="1.0" />
+            &nbsp;&nbsp;&nbsp;&nbsp; <span id="n">n<sub>t</sub></span> = <input class="inputData" id="N2" value="1.33" />
+            &nbsp;&nbsp;&nbsp;&nbsp; <button id="redraw_button" onclick="init()">Redraw</button><br />
+        </p>
+    </div>
+    <div>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp; <span id="">Click and drag the incident ray.</span>
+        </p>
+    </div>
+    <div>
+        <canvas id="canvas" width="500" height="200" style="border:1px solid black; margin-left:50px"></canvas>
+    </div>
+        <p>
+            Angle of Incidence <span id="theta">&theta;<sub>i</sub></span>: <span class="result" id="angle_of_incidence" ></span><br />
+            Angle of Transmittance <span id="theta">&theta;<sub>t</sub></span>: <span class="result" id="angle_of_refraction" ></span>
+        </p>
+    </div>
+</body>
+</html>

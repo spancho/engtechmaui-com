@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Thin Lens - Calculator</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1, #omega {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1, #phi, #n {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+</style>
+<script type="text/javascript">
+function Clear_All() {
+    document.getElementById("focal").innerHTML = null;
+    document.getElementById("Si_1").innerHTML = null;
+    document.getElementById("So_2").innerHTML = null;
+}
+function Focal_Length() {
+    var So = parseFloat(document.getElementById("So").value);
+    var Si = parseFloat(document.getElementById("Si").value);
+    document.getElementById("focal").innerHTML = Math.round((1/((1/So)+(1/Si)))*100)/100;
+    }
+    
+function Image_Dist() {
+    var focal_1 = parseFloat(document.getElementById("focal_1").value);
+    var So_1 = parseFloat(document.getElementById("So_1").value);
+    document.getElementById("Si_1").innerHTML = Math.round((1/((1/focal_1)-(1/So_1)))*100)/100;
+    }
+    
+function Object_Dist() {
+    var focal_2 = parseFloat(document.getElementById("focal_2").value);
+    var Si_2 = parseFloat(document.getElementById("Si_2").value);
+    document.getElementById("So_2").innerHTML = Math.round((1/((1/focal_2)-(1/Si_2)))*100)/100;
+    }
+</script>
+</head>
+
+<body>
+    <p  style="font-size: 150%">
+        <u>Thin Lens Equation:</u>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <sup>1</sup>&frasl;<sub>&fnof;</sub> = <sup>1</sup>&frasl;<sub>S<sub>o</sub></sub> + <sup>1</sup>&frasl;<sub>S<sub>i</sub></sub><br />
+    </p>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="calc_button1" onclick="Clear_All()">Clear All</button>
+    </p>
+    <h2>Find focal length &fnof;. &nbsp;&nbsp;&nbsp;&nbsp; Enter S<sub>o</sub> and S<sub>i</sub> in meters.</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp; S<sub>o</sub>: <input class="inputData" id="So" value="10" />
+        &nbsp;&nbsp;&nbsp;&nbsp; S<sub>i</sub>: <input class="inputData" id="Si" value="5"/>
+        &nbsp;&nbsp;&nbsp; <button id="calc_button1" onclick="Focal_Length()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp; &fnof;  = (S<sub>o</sub>S<sub>i</sub>) / (S<sub>i</sub> + S<sub>o</sub>) = <span id="focal" class="result"></span> meters
+    </p>
+    
+    <h2>Find image distance S<sub>i</sub>. &nbsp;&nbsp;&nbsp;&nbsp; Enter &fnof; and S<sub>o</sub> in meters:</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp; &fnof;: <input class="inputData" id="focal_1" value="6.67"/>
+        &nbsp;&nbsp;&nbsp;&nbsp; S<sub>o</sub>: <input class="inputData" id="So_1" value="10"/>
+        &nbsp;&nbsp;&nbsp;&nbsp; <button id="calc_button1" onclick="Image_Dist()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp; S<sub>i</sub> = (&fnof; S<sub>o</sub>) / (S<sub>o</sub> - &fnof;) = <span id="Si_1" class="result"></span> meters
+    </p>
+    
+    <h2>Find object distance S<sub>o</sub>. &nbsp;&nbsp;&nbsp;&nbsp; Enter &fnof; and S<sub>i</sub> in meters:</h2>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp; &fnof;: <input class="inputData" id="focal_2" value="6.67"/>
+        &nbsp;&nbsp;&nbsp;&nbsp; S<sub>i</sub>: <input class="inputData" id="Si_2" value="10"/>
+        &nbsp;&nbsp;&nbsp;&nbsp; <button id="calc_button1" onclick="Object_Dist()">Calculate</button>
+        &nbsp;&nbsp;&nbsp;&nbsp; S<sub>o</sub> = (&fnof; S<sub>i</sub>) / (S<sub>i</sub> - &fnof;) = <span id="So_2" class="result"></span> meters
+    </p>
+    
+
+
+</body>
+</html>

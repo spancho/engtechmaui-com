@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Sine Wave - Diagram</title>
+        <style type="text/css">
+
+           .inputData {
+              width: 40px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1, #omega {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1, #phi {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+        #Canvas1 {
+                    border: dotted 1px black;
+                    background-color: #D4E6F4;
+                    float: right;
+                    margin-right: 5%;
+            }
+    </style>
+    <script type="text/javascript">
+        var theta = 360;
+        var background;
+        var w, h, x, y, x0, y0, x1, y1, x2, y2, x3, y3;
+        var r;
+        var theata, theta1, phi;
+        var sin_theta, cos_theta, theta_degrees, theta_radians;
+        var interval_handle;
+        
+        function init() {
+            var theCanvas = document.getElementById('Canvas1');
+            var ctx = theCanvas.getContext("2d");
+            
+            w = theCanvas.width;
+            h = theCanvas.height;
+            x0 = h/2;		y0 = h/4;
+            x1 = h;			y1 = h/4;
+            x2 = 0;			y2 = h/2;
+            x3 = w/3;		y3 = (3*h)/4;
+            r = 0.8*y0;
+            phi_sin = parseFloat(document.getElementById("phi_sin").value);
+            phi_cos = parseFloat(document.getElementById("phi_cos").value);
+            omega_sin = parseFloat(document.getElementById("omega_sin").value);
+            omega_cos = parseFloat(document.getElementById("omega_cos").value);
+            
+            ctx.clearRect ( 0 , 0 , w , h );
+            clearInterval(interval_handle);
+            
+            // Draw the x-axis
+            ctx.fillStyle = "black";
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x2,y0);
+            ctx.lineTo(w,y0);
+            for (var i = 0; i <= w; i = i + w/12){
+                ctx.moveTo(i, y1-10);
+                ctx.lineTo(i, y1+10);
+                ctx.stroke();
+            }
+            ctx.font = "15pt Georgia"
+            ctx.fillText("-pi/2",(1/6)* w, y1+40);
+            ctx.fillText("pi/2", (3/6)* w, y1+40);
+            ctx.fillText("pi", (4/6)* w, y1+40);
+            ctx.fillText("3pi/2", (5/6)* w, y1+40);
+            ctx.fillText("t", w-20, y1 - 10);
+            ctx.moveTo(x2,y3);
+            ctx.lineTo(w,y3);
+            for (var i =0; i <= w; i= i+ w/12){
+                ctx.moveTo(i, y3-10);
+                ctx.lineTo(i, y3+10);
+                ctx.stroke();
+            }
+            ctx.fillText("-pi/2", (1/6)* w, y3+40);
+            ctx.fillText("pi/2", (3/6)* w, y3+40);
+            ctx.fillText("pi", (4/6)* w, y3+40);
+            ctx.fillText("3pi/2", (5/6)* w, y3+40);
+            ctx.fillText("t", w-20, y3-10);
+            ctx.stroke();
+            
+            // Draw the y-axis
+            //ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x3,0);
+            ctx.lineTo(x3,h);
+            ctx.font = "15pt Georgia"
+            ctx.fillText("Sine wave", 10, 20);
+            ctx.fillText("y", x3 - 15, 15);
+            ctx.fillText("Cosine wave", 10, y2 + 20);
+            ctx.fillText("y", x3 - 15, y2 +10);
+            ctx.stroke();
+            
+            // Draw Sine Wave
+            ctx.lineWidth = 3;
+            ctx.beginPath()
+            ctx.moveTo(0,y1);
+            for (var i=0; i < 540; i+=1) {
+                    x = 0 + i*h/360;
+                    y = y1 - r * Math.sin(omega_sin*(i+phi_sin-180)*Math.PI/180);
+                    ctx.lineTo(x,y)
+            }
+            ctx.stroke();
+            
+            // Draw Horizontal Cosine Wave 
+            ctx.lineWidth = 3;
+            ctx.beginPath()
+            ctx.moveTo(0,y3-r);
+            for (var i=0; i < 540; i+=1) {
+                    x = 0 + i*h/(360);
+                    y = y3 - r * Math.cos(omega_cos*(i+phi_cos-180)*Math.PI/180);
+                    ctx.lineTo(x,y)
+            }
+            ctx.stroke();
+            
+            background = ctx.getImageData(0,0,w,h);
+        
+        }
+        
+        function redraw() {
+            var theCanvas = document.getElementById('Canvas1');
+            var ctx = theCanvas.getContext("2d");
+            w = theCanvas.width;
+            h = theCanvas.height;
+            if (theta==360) {theta = 0} else {theta +=5;}
+            x = x0 + r * Math.cos((theta+phi)*Math.PI/180);
+            y = y0 - r * Math.sin((theta+phi)*Math.PI/180);
+            
+            // Update Output Panel: Sin, Cos, Theta degrees and Theta radians
+            sin_theta = (Math.sin(theta*Math.PI/180)).toFixed(3);
+            cos_theta = (Math.cos(theta*Math.PI/180)).toFixed(3);
+            theta_degrees = theta;
+            theta_radians = (theta * Math.PI/180).toFixed(3);
+            
+            ctx.putImageData(background,0,0);
+                
+        }
+    </script>
+</head>
+
+<body onload="init()">
+    
+    <canvas id="Canvas1" width="600" height="400">Your browser does not support canvas.</canvas>
+    
+    <p>
+    <br />
+    &nbsp; Sine Wave: <br />
+    &nbsp; <span id="y">y</span>(t) = A*Sin (<span id="omega">&omega;</span>*t + <span id="phi">&phi;</span>)<br />
+    &nbsp; <span id="phi">&phi;</span> = <input class="inputData" id="phi_sin" value="0" />
+    &nbsp; <span id="omega">&omega;</span> = <input class="inputData" id="omega_sin" value="1" />
+    &nbsp; <button id="redraw_button" onclick="init()">Redraw</button><br /><br /><br /><br />
+    &nbsp; Cosine Wave: <br />
+    &nbsp; <span id="y">y</span>(t) = A*Cos (<span id="omega">&omega;</span>*t + <span id="phi">&phi;</span>)<br />
+    &nbsp; <span id="phi">&phi;</span> = <input class="inputData" id="phi_cos" value="0" />
+    &nbsp; <span id="omega">&omega;</span> = <input class="inputData" id="omega_cos" value="1" />
+    &nbsp; <button id="redraw_button" onclick="init()">Redraw</button>
+    </p> 
+</body>
+</html>

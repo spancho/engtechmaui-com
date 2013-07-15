@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Trig Diagram</title>
+        <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+       font-size: 125%;
+       font-weight: bold;
+       color: #1e3cbf;
+       }
+       #x, #x1 {color: red;}
+       #y, #y1 {color: green;}
+       #r, #r1 {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+            font-size: 12pt;
+           font-weight: bold;
+       }
+        #Canvas1 {
+            border: dotted 1px black;
+            background-color: #D4E6F4;
+            float: right;
+            /*padding-right: 300px;*/
+            margin-right: 30%;
+        }
+    </style>
+    <script type="text/javascript">
+        var dragging = false;
+        var background;
+        var x,y;
+        var hyp, opp, adj;
+        var sin_theta, cos_theta, tan_theta, theta_degrees, theta_radians;
+        
+        function init() {
+            var canvas = document.getElementById('Canvas1');
+            var ctx = canvas.getContext("2d");
+            var w = canvas.width;
+            var h = canvas.height;
+            var x0 = w/2;		var y0 = h/2;
+            var r = 0.8*y0;
+            var theta = 45;
+            x = x0 + r * Math.cos(theta*Math.PI/180);
+            y = y0 - r * Math.sin(theta*Math.PI/180);
+            var x_new, y_new;
+            
+            // Draw the x-axis
+            //ctx.fillStyle = "black";
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0,y0);
+            ctx.lineTo(w,y0);
+            ctx.stroke();
+            ctx.font = "16pt Georgia"
+            ctx.fillText("x", w-12, y0+16);
+            
+            // Draw the y-axis
+            //ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x0,0);
+            ctx.lineTo(x0,h);
+            ctx.stroke();
+            ctx.fillText("y", x0 + 6, 12);
+            
+            // Label the Quadrants
+            ctx.font = "20pt Georgia"
+            ctx.fillText("I", w-35, +25);
+            ctx.fillText("II", +15, +25);
+            ctx.fillText("III", +15, h-25);
+            ctx.fillText("IV", w-35, h-25);
+            
+            // Draw circle
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(x0,y0,r,0,2*Math.PI,false);
+            ctx.stroke();
+            
+            background = ctx.getImageData(0,0,w,h);
+            
+            redraw();
+                                                             
+            canvas.onmousedown = function(evt) {
+                dragging = true;
+                var rect = canvas.getBoundingClientRect();
+                //s1_x = canvas.width/2 - (evt.clientX - rect.left);
+                //s1_y = canvas.height/2 - (evt.clientY - rect.top);
+                x = evt.clientX - rect.left;
+                y = evt.clientY - rect.top;
+                
+                hyp = Math.sqrt((y-y0)*(y-y0)+(x-x0)*(x-x0));
+                adj = Math.sqrt((x-x0)*(x-x0));
+                if ((x < x0) && (y > y0)) { // Quadrant I
+                        theta = Math.floor(Math.acos(adj/hyp)*180/Math.PI +180);
+                } else if ((x < x0) && (y < y0)) { // Quadrant II
+                        theta = Math.floor(180 - Math.acos(adj/hyp)*180/Math.PI);
+                } else if ((x > x0) && (y < y0)) { // Quadrant III
+                        theta = Math.floor(Math.acos(adj/hyp)*180/Math.PI);
+                } else { // Quadrant IV
+                        theta = Math.floor(360 - Math.acos(adj/hyp)*180/Math.PI);
+                } 
+                
+                //theta = Math.acos(adj/hyp)*180/Math.PI;
+                
+                //move(x,y);
+                redraw();
+            }
+            canvas.onmouseup = function(evt) {
+                    dragging = false;
+            }
+            canvas.onmousemove = function(evt) {
+                if(!dragging) return;
+                var rect = canvas.getBoundingClientRect();
+                //s1_x = canvas.width/2 - (evt.clientX - rect.left);
+                //s1_y = canvas.height/2 - (evt.clientY - rect.top);
+                x = evt.clientX - rect.left;
+                y = evt.clientY - rect.top;
+                
+                hyp = Math.sqrt((y-y0)*(y-y0)+(x-x0)*(x-x0));
+                adj = Math.sqrt((x-x0)*(x-x0));
+                // theta = Math.acos(adj/hyp)*180/Math.PI;
+                if ((x < x0) && (y > y0)) { // Quadrant I
+                        theta = Math.floor(Math.acos(adj/hyp)*180/Math.PI +180);
+                } else if ((x < x0) && (y < y0)) { // Quadrant II
+                        theta = Math.floor(180 - Math.acos(adj/hyp)*180/Math.PI);
+                } else if ((x > x0) && (y < y0)) { // Quadrant III
+                        theta = Math.floor(Math.acos(adj/hyp)*180/Math.PI);
+                } else { // Quadrant IV
+                        theta = Math.floor(360 - Math.acos(adj/hyp)*180/Math.PI);
+                } 
+                //move(x,y);
+                redraw();
+            }
+            
+            
+            function redraw(){
+                // restore background
+                ctx.putImageData(background,0,0);
+                // set points on the circle
+                x = x0 + r * Math.cos(theta*Math.PI/180);
+                y = y0 - r * Math.sin(theta*Math.PI/180);
+                
+                // Update Output Panel: Sin, Cos, Theta degrees and Theta radians
+                sin_theta = (Math.sin(theta*Math.PI/180)).toFixed(3);
+                cos_theta = (Math.cos(theta*Math.PI/180)).toFixed(3);
+                tan_theta = (cos_theta/sin_theta).toFixed(3);
+                theta_degrees = theta;
+                theta_radians = (theta * Math.PI/180).toFixed(3);
+                document.getElementById('sin_theta').innerHTML = sin_theta;
+                document.getElementById('cos_theta').innerHTML = cos_theta;
+                document.getElementById('tan_theta').innerHTML = tan_theta;
+                document.getElementById('theta_degrees').innerHTML = theta_degrees;
+                document.getElementById('theta_radians').innerHTML = theta_radians;
+                // Draw Hypotenuse
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(x0,y0);
+                ctx.lineTo(x,y);
+                ctx.stroke();
+                
+                // Draw X
+                ctx.strokeStyle = "red";
+                ctx.beginPath();
+                ctx.moveTo(x0,y0);
+                ctx.lineTo(x,y0);
+                ctx.stroke();
+                
+                // Draw Y
+                ctx.strokeStyle = "green";
+                ctx.beginPath();
+                ctx.moveTo(x,y0);
+                ctx.lineTo(x,y);
+                ctx.stroke();
+                
+                //Draw Arc
+                ctx.strokeStyle = "red";
+                ctx.beginPath();
+                //ctx.moveTo(x0+r,y0);
+                //ctx.lineTo(x,y);
+                ctx.arc(x0, y0, r, 2*Math.PI-theta*Math.PI/180,2*Math.PI,false);
+                ctx.stroke();
+                          
+                }
+                    
+            }
+    </script>
+</head>
+
+<body onload="init()">
+    <div>
+        <p>Click and drag radius to change the angle <span id="theta">&theta;</span>.<br /></p>
+    </div>
+    <canvas id="Canvas1" width="400" height="400">Your browser does not support canvas.</canvas>
+    <p>
+    <span id="y">y</span> = <span id="r">r</span> Sin <span id="theta">&theta;</span><br />
+    <span id="x">x</span> = <span id="r">r</span> Cos <span id="theta">&theta;</span><br />
+    Tan <span id="theta">&theta;</span> = <span id="y"><sup>y</sup></span>&frasl;<span id="x"><sub>x</sub></span><br />
+    <span id="x">x<sup>2</sup></span> + <span id="y">y<sup>2</sup></span> = <span id="r">r<sup>2</sup></span><br />
+    (<span id="r">r</span> Cos <span id="theta">&theta;</span>)<sup>2</sup> + (<span id="r">r</span> Sin <span id="theta">&theta;</span>)<sup>2</sup> = <span id="r">r</span></font><br />
+    divide by <span id="r">r<sup>2</sup></span> => Cos<sup>2</sup> <span id="theta">&theta;</span> + Sin<sup>2</sup> <span id="theta">&theta;</span> = 1<br /><br />
+    
+    <span id="theta">&theta;</span> [degrees] = <span class="result" id="theta_degrees" ></span><br />
+    <span id="theta">&theta;</span> [radians] = <span class="result" id="theta_radians" style="font-size:125%;"></span><br />
+    
+    Sin <span id="theta">&theta;</span> = <span class="result" id="sin_theta" ></span><br />
+    Cos <span id="theta">&theta;</span> = <span class="result" id="cos_theta" ></span><br />
+    Tan <span id="theta">&theta;</span> = <span class="result" id="tan_theta" ></span><br />
+    </p>
+</body>
+</html>

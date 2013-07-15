@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Young's Experiment - Diagram</title>
+    <style type="text/css">
+       .inputData {
+              width: 50px;
+       }
+       .result {
+              font-size: 125%;
+              font-weight: bold;
+              color: #1e3cbf;
+       }
+       #x, #x1, #omega {color: red;}
+       #y, #y1, #f {color: green;}
+       #r, #r1, #phi, #n {color: blue;}
+       #theta {color: #ff0099;/*color: violet;*/}
+       #n {color: blue;}
+       p {
+              font-size: 125%;
+              font-weight: bold;
+       }
+</style>
+<head>
+    <title>Young's Expt</title>
+    <style type="text/css">
+
+        #Canvas1 {
+            border: dotted 1px black;
+            background-color: #D4E6F4;
+            float: left;
+            /*padding-right: 300px;*/
+            margin-left: 20px;
+        }
+    </style>
+    <script type="text/javascript">
+        var dragging = false;
+        var background;
+        var x,y
+        var hyp, opp, adj;
+        var sin_theta, cos_theta, tan_theta, theta_degrees, theta_radians;
+        
+        function init() {
+            var canvas = document.getElementById('Canvas1');
+            var ctx = canvas.getContext("2d");
+            var w = canvas.width;
+            var h = canvas.height;
+            var x0 = w/2;		var y0 = h/2;
+            var theta;
+            var x_slit = w * 0.2;
+            var x_wall = w * 0.8;
+            var s = x_wall - x_slit;
+            var d = 100;
+            var a = d;
+            var lamda = 20;
+            var theta_m = Math.asin(lamda/a);
+            
+            var m;
+            var ym = s*Math.tan(theta_m);
+            
+            // for animation
+            var draw_wave;
+            var wave_position=0;
+            var num_b4_slit = x_slit/lamda;
+            var num_after_slit = s/lamda;
+            
+            // Draw 1-slits
+            ctx.strokeStyle = "black";
+            ctx.fillSytle = "black";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x_slit/2,0);
+            ctx.lineTo(x_slit/2,y0-(10));
+            ctx.stroke();
+            ctx.moveTo(x_slit/2,y0+(10));
+            ctx.lineTo(x_slit/2,h);
+            ctx.stroke();
+            
+            // Draw 2-slits
+            ctx.strokeStyle = "black";
+            ctx.fillSytle = "black";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x_slit,0);
+            ctx.lineTo(x_slit,y0-(d/2+10));
+            ctx.stroke();
+            ctx.moveTo(x_slit,y0-(d/2-10));
+            ctx.lineTo(x_slit,y0+(d/2-10));
+            ctx.stroke();
+            ctx.moveTo(x_slit,y0+(d/2+10));
+            ctx.lineTo(x_slit,h);
+            ctx.stroke();
+            
+            // Draw End Wall
+            ctx.clearRect(x_wall,0,w,h);
+            ctx.strokeStyle = "black";
+            ctx.fillSytle = "black";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x_wall,0);
+            ctx.lineTo(x_wall,h);
+            ctx.stroke();
+                                    
+            background = ctx.getImageData(0,0,w,h);
+            
+            draw_wave = setInterval(redraw,300);
+                                            
+                                            
+            canvas.onmousedown = function(evt) {
+                dragging = true;
+                var rect = canvas.getBoundingClientRect();
+                //s1_x = canvas.width/2 - (evt.clientX - rect.left);
+                //s1_y = canvas.height/2 - (evt.clientY - rect.top);
+                x = evt.clientX - rect.left;
+                y = evt.clientY - rect.top;
+                redraw();
+            }
+            canvas.onmouseup = function(evt) {
+                dragging = false;
+            }
+            canvas.onmousemove = function(evt) {
+                if(!dragging) return;
+                var rect = canvas.getBoundingClientRect();
+                //s1_x = canvas.width/2 - (evt.clientX - rect.left);
+                //s1_y = canvas.height/2 - (evt.clientY - rect.top);
+                x = evt.clientX - rect.left;
+                y = evt.clientY - rect.top;
+                redraw();
+            }
+            
+            function stop_draw(){
+                    clearInterval(draw_wave);
+            }
+            
+            
+            function redraw(){
+                // restore background
+                ctx.putImageData(background,0,0);
+                wave_position += lamda;
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = 2;
+                // Draw incoming parallel waves
+                if (wave_position < x_slit/2){
+                    ctx.beginPath();
+                    ctx.moveTo(wave_position,0);
+                    ctx.lineTo(wave_position,h);
+                    ctx.stroke();
+                }
+                
+                // Draw the cylindrical waves past the first slit
+                if ((wave_position > x_slit/2)&&(wave_position < x_slit+lamda)){
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(x_slit/2,y0,wave_position-x_slit/2,(3/2)*Math.PI,(1/2)*Math.PI);
+                    ctx.stroke();
+                }
+                
+                if ((wave_position > x_slit) && ( wave_position < x_slit+ 7*lamda)) {
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(x_slit/2,y0,wave_position-x_slit/2,(3/2)*Math.PI,0-Math.acos((x_slit/2)/(wave_position-x_slit/2)));
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(x_slit/2,y0,wave_position-x_slit/2,0+Math.acos((x_slit/2)/(wave_position-x_slit/2)),(1/2)*Math.PI);
+                    ctx.stroke();				
+                }
+                
+                // Draw the dual cylindrical waves past the double slit
+                if ((wave_position > x_slit)&&(wave_position < x_wall+lamda)){
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(x_slit,y0-d/2,wave_position-x_slit,(3/2)*Math.PI,(1/2)*Math.PI);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(x_slit,y0+d/2,wave_position-x_slit,(3/2)*Math.PI,(1/2)*Math.PI);
+                    ctx.stroke();
+                }
+                
+                // Draw Slits and End Wall
+                if (wave_position < x_wall){
+                    // Draw Slits
+                    ctx.strokeStyle = "black";
+                    ctx.fillSytle = "black";
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(x_slit,0);
+                    ctx.lineTo(x_slit,y0-(d/2+10));
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x_slit,y0-(d/2-10));
+                    ctx.lineTo(x_slit,y0+(d/2-10));
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x_slit,y0+(d/2+10));
+                    ctx.lineTo(x_slit,h);
+                    ctx.stroke();
+                    
+                    // Draw End Wall
+                    ctx.clearRect(x_wall,0,w,h);
+                    ctx.strokeStyle = "black";
+                    ctx.fillSytle = "black";
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(x_wall,0);
+                    ctx.lineTo(x_wall,h);
+                    ctx.stroke();
+                }
+                
+                // Draw and Label Center Node Line: m = 0
+                ctx.strokeStyle = "red"
+                ctx.lineWidth = 2;
+                if (wave_position > x_wall){
+                    ctx.beginPath()
+                    ctx.moveTo(x_slit, y0);
+                    ctx.lineTo(x_wall, y0);
+                    ctx.stroke();
+                    ctx.fillStyle = 'black';
+                    ctx.font = "12pt Georgia"
+                    ctx.fillText("  m = 0", x_wall , y0);	
+                }
+                
+                // Draw and Label Node Lines: m = 1 and m = -1
+                if (wave_position > x_wall + (2*lamda)){
+                    var spacer = 50;
+                    var spacer1 = 20;
+                    ctx.beginPath()
+                    ctx.moveTo(x_slit, y0);
+                    ctx.lineTo(x_wall, y0 + (ym));
+                    ctx.stroke();
+                    ctx.fillStyle = 'black';
+                    ctx.font = "12pt Georgia"
+                    ctx.fillText("  m = -1", x_wall, y0+ym);
+                    ctx.beginPath()
+                    ctx.moveTo(x_slit, y0);
+                    ctx.lineTo(x_wall, y0 - (ym));
+                    ctx.stroke();
+                    ctx.font = "12pt Georgia"
+                    ctx.fillText("  m = 1", x_wall, y0 - (ym));
+                }
+                
+                if (wave_position > x_wall + (4*lamda)){
+                    // y - arrow
+                    ctx.beginPath();
+                    ctx.strokeStyle = "red"
+                    ctx.moveTo(x_wall + spacer + 10, y0);
+                    ctx.lineTo(x_wall + spacer + 10, ym);
+                        ctx.moveTo(x_wall + spacer + 10, y0);
+                        ctx.lineTo(x_wall + spacer +  2, y0-10);
+                        ctx.moveTo(x_wall + spacer + 10, y0);
+                        ctx.lineTo(x_wall + spacer + 18, y0-10);
+                        ctx.moveTo(x_wall + spacer + 10, ym);
+                        ctx.lineTo(x_wall + spacer +  2, ym+10);
+                        ctx.moveTo(x_wall + spacer + 10, ym);
+                        ctx.lineTo(x_wall + spacer + 18, ym+10);
+                        ctx.stroke();
+                    ctx.fillStyle = 'red';
+                    ctx.font = "13pt Georgia bold"
+                    ctx.fillText("  y = 0.2 cm", x_wall + spacer + 10, (ym+y0)/2);
+                    ctx.stroke();
+                }
+                
+                if (wave_position > x_wall + (7*lamda)){
+                    //d - arrow 
+                    ctx.beginPath();
+                    ctx.strokeStyle = "red"
+                    ctx.moveTo(x_slit - spacer1, y0 -(d/2));
+                    ctx.lineTo(x_slit - spacer1, y0 +(d/2));
+                        ctx.moveTo(x_slit - spacer1,  y0 -(d/2));
+                        ctx.lineTo(x_slit - spacer1 - 8,  y0 -(d/2)+8);
+                        ctx.moveTo(x_slit - spacer1,  y0 -(d/2));
+                        ctx.lineTo(x_slit - spacer1 + 8,  y0 -(d/2)+8);
+                        ctx.moveTo(x_slit - spacer1,  y0 +(d/2));
+                        ctx.lineTo(x_slit - spacer1 -  8,  y0 +(d/2)-8);
+                        ctx.moveTo(x_slit - spacer1,  y0 +(d/2));
+                        ctx.lineTo(x_slit - spacer1 + 8,  y0 +(d/2)-8);
+                        ctx.stroke();
+                    ctx.fillStyle = 'red';
+                    ctx.font = "13pt Georgia bold"
+                    ctx.fillText("  d = 0.6 mm", 40, y0+3);
+                    ctx.stroke();
+                    
+                }
+                
+                if (wave_position > x_wall + (10*lamda)){
+                    // x - arrow
+                    ctx.beginPath();
+                    ctx.strokeStyle = "red"
+                    ctx.moveTo(x_slit, .8*h);
+                    ctx.lineTo(x_wall , .8*h);
+                        ctx.moveTo(x_slit, .8*h);
+                        ctx.lineTo(x_slit + 10, .8*h - 10);
+                        ctx.moveTo(x_slit, .8*h);
+                        ctx.lineTo(x_slit + 10, .8*h + 10);
+                        ctx.moveTo(x_wall , .8*h);
+                        ctx.lineTo(x_wall - 10, .8*h - 10);
+                        ctx.moveTo(x_wall , .8*h);
+                        ctx.lineTo(x_wall - 10, .8*h + 10);
+                        ctx.stroke();
+                    ctx.fillStyle = 'red';
+                    ctx.font = "13pt Georgia bold";
+                    ctx.fillText("x = 5.0 m", ((x_slit+x_wall)/2)-10, 0.8*h +20);
+                    ctx.stroke();
+                    stop_draw();
+                    
+                }
+                
+                background = ctx.getImageData(0,0,w,h);   
+            }
+        }
+    </script>
+</head>
+
+<body onload="init()">
+    <h2>Young's 2-Slit Experiment:</h2>
+    <div>
+        <canvas id="Canvas1" width="800" height="400">Your browser does not support canvas.</canvas>
+    </div>
+    <div style="clear:both;">
+        <br /><br />
+        <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span id="r">&lambda;</span> = (<span id="n">d</span>*<span id="y">y</span>)/(m*<span id="x">x</span>) =
+        [(<span id="n">0.6 mm</span>)*(<span id="y">0.2 cm</span>) / (1)*(<span id="x">5.0 m</span>)] = 240 nm
+        </p>
+    </div>
+</body>
+</html>
